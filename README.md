@@ -33,7 +33,7 @@
     <img src="images/logo.png" alt="Logo" width="80" height="80">
   </a>
 
-  <h3 align="center">Best-README-Template</h3>
+  <h3 align="center">Predicting Flight Delays</h3>
 
   <p align="center">
     An awesome README template to jumpstart your projects!
@@ -99,18 +99,62 @@ Use the `BLANK_README.md` to get started.
 
 
 
-### Built With
+### Columns
 
-This section should list any major frameworks/libraries used to bootstrap your project. Leave any add-ons/plugins for the acknowledgements section. Here are a few examples.
-
-* [Next.js](https://nextjs.org/)
-* [React.js](https://reactjs.org/)
-* [Vue.js](https://vuejs.org/)
-* [Angular](https://angular.io/)
-* [Svelte](https://svelte.dev/)
-* [Laravel](https://laravel.com)
-* [Bootstrap](https://getbootstrap.com)
-* [JQuery](https://jquery.com)
+<b>FL_DATE</b> = Date of the Flight
+<br>
+<b>OP_CARRIER</b> = Airline Identifier
+<br>
+<b>OP_CARRIER_FL_NUM</b> = Flight Number
+<br>
+<b>ORIGIN</b> = Starting Airport Code
+<br>
+<b>DEST</b> = Destination Airport Code
+<br>
+<b>CRS_DEP_TIME</b> = Planned Departure Time
+<br>
+<b>DEP_TIME</b> = Actual Departure Time
+<br>
+<b>DEP_DELAY</b> = Total Delay on Departure in minutes
+<br>
+<b>TAXI_OUT</b> = The time duration elapsed between departure from the origin airport gate and wheels off
+<br>
+<b>WHEELS_OFF</b> = The time point that the aircraft's wheels leave the ground
+<br>
+<b>WHEELS_ON</b> = The time point that the aircraft'ss wheels touch on the ground
+<br>
+<b>TAXI_IN</b> = The time duration elapsed between wheels-on and gate arrival at the destination airport
+<br>
+<b>CRS_ARR_TIME</b> = Planned arrival time
+<br>
+<b>ARR_TIME</b> = Actual Arrival Time = ARRIVAL_TIME - SCHEDULED_ARRIVAL
+<br>
+<b>ARR_DELAY</b> = Total Delay on Arrival in minutes
+<br>
+<b>CANCELLED</b> = Flight Cancelled (1 = cancelled)
+<br>
+<b>CANCELLATION_CODE</b> = Reason for Cancellation of flight: A - Airline/Carrier; B - Weather; C - National Air System; D - Security
+<br>
+<b>DIVERTED</b> = Aircraft landed on different airport that the one scheduled
+<br>
+<b>CRS_ELAPSED_TIME</b> = Planned time amount needed for the flight trip
+<br>
+<b>ACTUAL_ELAPSED_TIME</b> = AIR_TIME+TAXI_IN+TAXI_OUT
+<br>
+<b>AIR_TIME</b> = The time duration between wheels_off and wheels_on time
+<br>
+<b>DISTANCE</b> = Distance between two airports
+<br>
+<b>CARRIER_DELAY</b> = Delay caused by the airline in minutes
+<br>
+<b>WEATHER_DELAY</b> = Delay caused by weather
+<br>
+<b>NAS_DELAY</b> = Delay caused by air system
+<br>
+<b>SECURITY_DELAY</b> = caused by security reasons
+<br>
+<b>LATE_AIRCRAFT_DELAY</b> = Delay caused by security
+<br>
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -204,50 +248,3 @@ Don't forget to give the project a star! Thanks again!
 Distributed under the MIT License. See `LICENSE.txt` for more information.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
-
-
-
-<!-- CONTACT -->
-## Contact
-
-Your Name - [@your_twitter](https://twitter.com/your_username) - email@example.com
-
-Project Link: [https://github.com/your_username/repo_name](https://github.com/your_username/repo_name)
-
-<p align="right">(<a href="#top">back to top</a>)</p>
-
-
-
-<!-- ACKNOWLEDGMENTS -->
-## Acknowledgments
-
-Use this space to list resources you find helpful and would like to give credit to. I've included a few of my favorites to kick things off!
-
-* [Choose an Open Source License](https://choosealicense.com)
-* [GitHub Emoji Cheat Sheet](https://www.webpagefx.com/tools/emoji-cheat-sheet)
-* [Malven's Flexbox Cheatsheet](https://flexbox.malven.co/)
-* [Malven's Grid Cheatsheet](https://grid.malven.co/)
-* [Img Shields](https://shields.io)
-* [GitHub Pages](https://pages.github.com)
-* [Font Awesome](https://fontawesome.com)
-* [React Icons](https://react-icons.github.io/react-icons/search)
-
-<p align="right">(<a href="#top">back to top</a>)</p>
-
-
-
-<!-- MARKDOWN LINKS & IMAGES -->
-<!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-[contributors-shield]: https://img.shields.io/github/contributors/othneildrew/Best-README-Template.svg?style=for-the-badge
-[contributors-url]: https://github.com/othneildrew/Best-README-Template/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/othneildrew/Best-README-Template.svg?style=for-the-badge
-[forks-url]: https://github.com/othneildrew/Best-README-Template/network/members
-[stars-shield]: https://img.shields.io/github/stars/othneildrew/Best-README-Template.svg?style=for-the-badge
-[stars-url]: https://github.com/othneildrew/Best-README-Template/stargazers
-[issues-shield]: https://img.shields.io/github/issues/othneildrew/Best-README-Template.svg?style=for-the-badge
-[issues-url]: https://github.com/othneildrew/Best-README-Template/issues
-[license-shield]: https://img.shields.io/github/license/othneildrew/Best-README-Template.svg?style=for-the-badge
-[license-url]: https://github.com/othneildrew/Best-README-Template/blob/master/LICENSE.txt
-[linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
-[linkedin-url]: https://linkedin.com/in/othneildrew
-[product-screenshot]: images/screenshot.png
