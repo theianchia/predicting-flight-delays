@@ -7,7 +7,7 @@ import pandas as pd
 import numpy as np
 from tabulate import tabulate
 
-COLS = [
+WEATHER_COLS = [
     'time',
     'precipitation_sum (mm)',
     'rain_sum (mm)',
@@ -17,7 +17,7 @@ COLS = [
     'et0_fao_evapotranspiration (mm)',
 ]
 
-COLS_MAP = {
+WEATHER_COLS_MAP = {
     'time': 'Date',
     'precipitation_sum (mm)': 'Precipitation',
     'rain_sum (mm)': 'Rain',
@@ -27,7 +27,45 @@ COLS_MAP = {
     'et0_fao_evapotranspiration (mm)': 'Evapotranspiration'
 }
 
-OUTPUT_DIR = 'cleaned_weather'
+WEATHER_OUTPUT_DIR = 'cleaned_weather'
+
+AIRLINE_COLS = [
+  'FL_DATE',
+  'OP_CARRIER',
+  'ORIGIN',
+  'DEST',
+  'Delay'
+]
+
+AIRLINE_COLS_MAP = {
+  'FL_DATE': 'Date',
+  'ORIGIN': 'Origin',
+  'DEST': 'Destination',
+  'OP_CARRIER': 'Carrier'
+}
+
+AIRLINES_MAP = {
+  'UA':'United Airlines',
+  'AS':'Alaska Airlines',
+  '9E':'Endeavor Air',
+  'B6':'JetBlue Airways',
+  'EV':'ExpressJet',
+  'F9':'Frontier Airlines',
+  'G4':'Allegiant Air',
+  'HA':'Hawaiian Airlines',
+  'MQ':'Envoy Air',
+  'NK':'Spirit Airlines',
+  'OH':'PSA Airlines',
+  'OO':'SkyWest Airlines',
+  'VX':'Virgin America',
+  'WN':'Southwest Airlines',
+  'YV':'Mesa Airline',
+  'YX':'Republic Airways',
+  'AA':'American Airlines',
+  'DL':'Delta Airlines'
+}
+
+AIRLINE_OUTPUT_DIR = 'cleaned_airline'
 
 TABLE_HEADERS = ['Successful', 'Unsuccessful']
 
@@ -42,6 +80,60 @@ class bcolors:
   BOLD = '\033[1m'
   UNDERLINE = '\033[4m'
 
+def clean_airline_datasets(directory):
+  successfully_cleaned = []
+  unsuccessfully_cleaned = []
+  show_sample = True
+
+  if not os.path.exists(directory):
+    return "Directory does not exist!"
+
+  counter = 0
+
+  for filename in os.listdir(directory):
+    if (counter % 20 == 0 and counter != 0):
+      print(f"{bcolors.OKGREEN}{counter} files touched")
+
+    counter += 1
+
+    if not os.path.isfile(os.path.join(directory, filename)) or filename == '.DS_Store':
+      continue
+    
+    filepath = os.path.join(directory, filename)
+    df = pd.read_csv(filepath)
+    df['Delay'] = (df['ACTUAL_ELAPSED_TIME'] - df['CRS_ELAPSED_TIME']).to_numpy()
+    df.dropna(inplace=True)
+
+    selected_df = df[AIRLINE_COLS]
+    selected_df.rename(columns=cols_map, inplace=True)
+    selected_df['Carrier'].replace(airline_map, inplace=True)
+
+    encoded_airlines_df = pd.get_dummies(selected_df['Carrier'])
+    
+    selected_df.drop('Carrier', axis=1, inplace=True)
+    cleaned_df = pd.concat([selected_df, encoded_airlines_df], axis=1)
+
+    if show_sample:
+      print(f"{bcolors.WARNING}\nColumn Preview:\n")
+      print(cleaned_df.head())
+      col_len = len(''.join(list(cleaned_df.columns)))
+      print(f"\n{'-'*col_len}\n")
+      show_sample = False
+
+    if not os.path.exists(AIRLINE_OUTPUT_DIR) or not os.path.isdir(AIRLINE_OUTPUT_DIR):
+      os.mkdir(AIRLINE_OUTPUT_DIR)
+
+    new_filename = f"{AIRLINE_OUTPUT_DIR}/cleaned_{filename}"
+    cleaned_df.to_csv(new_filename, index=False)
+    successfully_cleaned.insert(0,filename)
+    unsuccessfully_cleaned.append('')
+
+  table = np.stack([successfully_cleaned, unsuccessfully_cleaned], axis=-1)
+  print('')
+  print(tabulate(table, TABLE_HEADERS, tablefmt="simple_outline"))
+
+
+
 def clean_weather_datasets(directory, year):
   successfully_cleaned = []
   unsuccessfully_cleaned = []
@@ -54,11 +146,11 @@ def clean_weather_datasets(directory, year):
 
   for filename in os.listdir(directory):
     if (counter % 20 == 0 and counter != 0):
-      print(f"{bcolors.OKGREEN}{counter} files checked")
+      print(f"{bcolors.OKGREEN}{counter} files touched")
 
     counter += 1
 
-    if not os.path.isfile(os.path.join(directory, filename)):
+    if not os.path.isfile(os.path.join(directory, filename)) or filename == '.DS_Store':
       continue
 
     filepath = os.path.join(directory, filename)
@@ -71,8 +163,8 @@ def clean_weather_datasets(directory, year):
       continue
 
     df = df[df['time'].dt.year == int(year)]
-    selected_df = df[COLS]
-    renamed_selected_df = selected_df.rename(columns=COLS_MAP)
+    selected_df = df[WEATHER_COLS]
+    renamed_selected_df = selected_df.rename(columns=WEATHER_COLS_MAP)
 
     if show_sample:
       print(f"{bcolors.WARNING}\nColumn Preview:\n")
@@ -81,10 +173,10 @@ def clean_weather_datasets(directory, year):
       print(f"\n{'-'*col_len}\n")
       show_sample = False
 
-    if not os.path.exists(OUTPUT_DIR) or not os.path.isdir(OUTPUT_DIR):
-      os.mkdir(OUTPUT_DIR)
+    if not os.path.exists(WEATHER_OUTPUT_DIR) or not os.path.isdir(WEATHER_OUTPUT_DIR):
+      os.mkdir(WEATHER_OUTPUT_DIR)
 
-    new_filename = f"{OUTPUT_DIR}/cleaned_{year}_{filename}"
+    new_filename = f"{WEATHER_OUTPUT_DIR}/cleaned_{year}_{filename}"
     selected_df.to_csv(new_filename, index=False)
     successfully_cleaned.insert(0,filename)
     unsuccessfully_cleaned.append('')
@@ -115,3 +207,4 @@ if __name__ == '__main__':
       inquirer.Text('dir', message="Relative file path to airline dataset"),
     ]
     answers = inquirer.prompt(get_airline_data)
+    clean_airline_datasets(answers['dir'])
