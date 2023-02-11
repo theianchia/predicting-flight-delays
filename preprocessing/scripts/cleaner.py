@@ -2,6 +2,7 @@
 
 import os
 
+import inquirer
 import pandas as pd
 import numpy as np
 from tabulate import tabulate
@@ -41,7 +42,7 @@ class bcolors:
   BOLD = '\033[1m'
   UNDERLINE = '\033[4m'
 
-def read_files_from_directory(directory, year):
+def clean_weather_datasets(directory, year):
   successfully_cleaned = []
   unsuccessfully_cleaned = []
   show_sample = True
@@ -94,6 +95,23 @@ def read_files_from_directory(directory, year):
 
 
 if __name__ == '__main__':
-  directory = input("Enter the weather datasets directory path: ")
-  year = input("Enter year: ")
-  read_files_from_directory(directory, year)
+  get_dataset = [
+    inquirer.List('dataset',
+      message='Which dataset are you cleaning?',
+      choices=['Weather', 'Airline'],
+    ),
+  ]
+  answers = inquirer.prompt(get_dataset)
+  if answers['dataset'] == 'Weather':
+    get_weather_data = [
+      inquirer.Text('dir', message="Relative file path to weather dataset"),
+      inquirer.Text('year', message="Year of weather dataset"),
+    ]
+    answers = inquirer.prompt(get_weather_data)
+    clean_weather_datasets(answers['dir'], answers['year'])
+
+  elif answers['dataset'] ==  'Airline':
+    get_airline_data = [
+      inquirer.Text('dir', message="Relative file path to airline dataset"),
+    ]
+    answers = inquirer.prompt(get_airline_data)
