@@ -88,13 +88,7 @@ def clean_airline_datasets(directory):
   if not os.path.exists(directory):
     return "Directory does not exist!"
 
-  counter = 0
-
   for filename in os.listdir(directory):
-    if (counter % 20 == 0 and counter != 0):
-      print(f"{bcolors.OKGREEN}{counter} files touched")
-
-    counter += 1
 
     if not os.path.isfile(os.path.join(directory, filename)) or filename == '.DS_Store':
       continue
@@ -102,22 +96,23 @@ def clean_airline_datasets(directory):
     filepath = os.path.join(directory, filename)
     df = pd.read_csv(filepath)
     df['Delay'] = (df['ACTUAL_ELAPSED_TIME'] - df['CRS_ELAPSED_TIME']).to_numpy()
-    df.dropna(inplace=True)
 
     selected_df = df[AIRLINE_COLS]
-    selected_df.rename(columns=cols_map, inplace=True)
-    selected_df['Carrier'].replace(airline_map, inplace=True)
+    print(selected_df.head())
+    selected_df.rename(columns=AIRLINE_COLS_MAP, inplace=True)
+    selected_df['Carrier'].replace(AIRLINES_MAP, inplace=True)
 
     encoded_airlines_df = pd.get_dummies(selected_df['Carrier'])
-    
+
     selected_df.drop('Carrier', axis=1, inplace=True)
+    selected_df.dropna(inplace=True)
     cleaned_df = pd.concat([selected_df, encoded_airlines_df], axis=1)
 
     if show_sample:
       print(f"{bcolors.WARNING}\nColumn Preview:\n")
       print(cleaned_df.head())
       col_len = len(''.join(list(cleaned_df.columns)))
-      print(f"\n{'-'*col_len}\n")
+      print('')
       show_sample = False
 
     if not os.path.exists(AIRLINE_OUTPUT_DIR) or not os.path.isdir(AIRLINE_OUTPUT_DIR):
@@ -131,7 +126,6 @@ def clean_airline_datasets(directory):
   table = np.stack([successfully_cleaned, unsuccessfully_cleaned], axis=-1)
   print('')
   print(tabulate(table, TABLE_HEADERS, tablefmt="simple_outline"))
-
 
 
 def clean_weather_datasets(directory, year):
@@ -170,7 +164,7 @@ def clean_weather_datasets(directory, year):
       print(f"{bcolors.WARNING}\nColumn Preview:\n")
       print(renamed_selected_df.head())
       col_len = len(''.join(list(renamed_selected_df.columns)))
-      print(f"\n{'-'*col_len}\n")
+      print('')
       show_sample = False
 
     if not os.path.exists(WEATHER_OUTPUT_DIR) or not os.path.isdir(WEATHER_OUTPUT_DIR):
