@@ -47,6 +47,10 @@
 
 ## Data Preprocessing
 
+### Using the CLI
+* Install dependencies `requirements.txt` into python environment
+* Run `python cleaner.py` to interact with CLI
+
 ### Columns
 * Initial columns from raw airlines dataset
 
@@ -77,6 +81,8 @@
 `NAS_DELAY` = Delay caused by air system<br>
 `SECURITY_DELAY` = caused by security reasons<br>
 `LATE_AIRCRAFT_DELAY` = Delay caused by security<br>
+
+* Initial columns from raw weather dataset
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
