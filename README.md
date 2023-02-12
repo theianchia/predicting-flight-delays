@@ -49,7 +49,7 @@
 
 ### Using the CLI
 * Install dependencies `requirements.txt` into python environment
-* Run `python cleaner.py` to interact with CLI
+* Run `python miner.py` to interact with CLI
 
 ### Columns
 * Initial columns from raw airlines dataset

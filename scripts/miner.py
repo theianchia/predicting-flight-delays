@@ -181,24 +181,37 @@ def clean_weather_datasets(directory, year):
 
 
 if __name__ == '__main__':
-  get_dataset = [
-    inquirer.List('dataset',
-      message='Which dataset are you cleaning?',
-      choices=['Weather', 'Airline'],
+  get_purpose = [
+    inquirer.List('purpose',
+      message="What's your purpose of use?",
+      choices=['Preprocessing', 'EDA'],
     ),
   ]
-  answers = inquirer.prompt(get_dataset)
-  if answers['dataset'] == 'Weather':
-    get_weather_data = [
-      inquirer.Text('dir', message="Relative file path to weather dataset"),
-      inquirer.Text('year', message="Year of weather dataset"),
-    ]
-    answers = inquirer.prompt(get_weather_data)
-    clean_weather_datasets(answers['dir'], answers['year'])
+  purpose = inquirer.prompt(get_purpose)
 
-  elif answers['dataset'] ==  'Airline':
-    get_airline_data = [
-      inquirer.Text('dir', message="Relative file path to airline dataset"),
+  if purpose['purpose'] == 'EDA':
+    pass
+
+  else:
+    get_dataset = [
+      inquirer.List('dataset',
+        message='Which dataset are you cleaning?',
+        choices=['Weather', 'Airline'],
+      ),
     ]
-    answers = inquirer.prompt(get_airline_data)
-    clean_airline_datasets(answers['dir'])
+    dataset = inquirer.prompt(get_dataset)
+
+    if dataset['dataset'] == 'Weather':
+      get_weather_data = [
+        inquirer.Text('dir', message="Relative file path to weather dataset"),
+        inquirer.Text('year', message="Year of weather dataset"),
+      ]
+      answers = inquirer.prompt(get_weather_data)
+      clean_weather_datasets(answers['dir'], answers['year'])
+
+    elif answers['dataset'] ==  'Airline':
+      get_airline_data = [
+        inquirer.Text('dir', message="Relative file path to airline dataset"),
+      ]
+      answers = inquirer.prompt(get_airline_data)
+      clean_airline_datasets(answers['dir'])
