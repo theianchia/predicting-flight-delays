@@ -6,6 +6,7 @@ import inquirer
 import pandas as pd
 import numpy as np
 from tabulate import tabulate
+from sklearn.preprocessing import StandardScaler
 
 WEATHER_COLS = [
     'time',
@@ -69,6 +70,24 @@ AIRLINE_OUTPUT_DIR = 'cleaned_airline'
 
 TABLE_HEADERS = ['Successful', 'Unsuccessful']
 
+ORIGIN_WEATHER_COLS = {
+    'Precipitation': 'Origin Precipitation', 
+    'Rain': 'Origin Rain', 
+    'Snowfall': 'Origin Snowfall',
+    'Windspeed': 'Origin Windspeed', 
+    'Windgusts': 'Origin Windgusts',
+    'Evapotranspiration': 'Origin Evapotranspiration'
+}
+
+DEST_WEATHER_COLS = {
+    'Precipitation': 'Dest Precipitation', 
+    'Rain': 'Dest Rain', 
+    'Snowfall': 'Dest Snowfall',
+    'Windspeed': 'Dest Windspeed', 
+    'Windgusts': 'Dest Windgusts',
+    'Evapotranspiration': 'Dest Evapotranspiration'
+}
+
 class bcolors:
   HEADER = '\033[95m'
   OKBLUE = '\033[94m'
@@ -86,7 +105,8 @@ def clean_airline_datasets(directory):
   show_sample = True
 
   if not os.path.exists(directory):
-    return "Directory does not exist!"
+    print("Directory does not exist!")
+    return
 
   for filename in os.listdir(directory):
 
@@ -111,7 +131,6 @@ def clean_airline_datasets(directory):
     if show_sample:
       print(f"{bcolors.WARNING}\nColumn Preview:\n")
       print(cleaned_df.head())
-      col_len = len(''.join(list(cleaned_df.columns)))
       print('')
       show_sample = False
 
@@ -134,7 +153,8 @@ def clean_weather_datasets(directory, year):
   show_sample = True
 
   if not os.path.exists(directory):
-    return "Directory does not exist!"
+    print("Directory does not exist!")
+    return
 
   counter = 0
 
@@ -163,7 +183,6 @@ def clean_weather_datasets(directory, year):
     if show_sample:
       print(f"{bcolors.WARNING}\nColumn Preview:\n")
       print(renamed_selected_df.head())
-      col_len = len(''.join(list(renamed_selected_df.columns)))
       print('')
       show_sample = False
 
@@ -180,6 +199,41 @@ def clean_weather_datasets(directory, year):
   print(tabulate(table, TABLE_HEADERS, tablefmt="simple_outline"))
 
 
+def eda(directory, year):
+  if not os.path.exists(directory):
+    return "Directory does not exist!"
+
+  CLEANED_AIRLINE_FILEPATH = f"{directory}/{AIRLINE_OUTPUT_DIR}/cleaned_airline_cancel_data_{year}.csv"
+  CLEANED_WEATHER_FILEDIR = f"{directory}/{WEATHER_OUTPUT_DIR}"
+
+  show_weather_sample = True
+
+  if not os.path.isfile(CLEANED_AIRLINE_FILEPATH):
+    print("Cleaned Airline Dataset does not exist!")
+    return
+
+  airline_df = pd.read_csv(CLEANED_AIRLINE_FILEPATH)
+  
+  print(f"{bcolors.WARNING}\n Airline Column Preview:\n")
+  print(airline_df.head())
+  print('')
+
+  for filename in os.listdir(CLEANED_WEATHER_FILEDIR):
+
+    if not os.path.isfile(os.path.join(CLEANED_WEATHER_FILEDIR, filename)) or filename == '.DS_Store':
+      continue
+
+    weather_filepath = os.path.join(CLEANED_WEATHER_FILEDIR, filename)
+    weather_df = pd.read_csv(weather_filepath)
+
+    if show_weather_sample:
+      print(f"{bcolors.WARNING}\n Weather Column Preview:\n")
+      print(weather_df.head())
+      print('')
+      show_weather_sample = False
+      break
+
+
 if __name__ == '__main__':
   get_purpose = [
     inquirer.List('purpose',
@@ -190,7 +244,14 @@ if __name__ == '__main__':
   purpose = inquirer.prompt(get_purpose)
 
   if purpose['purpose'] == 'EDA':
-    pass
+    print(f"{bcolors.WARNING}\nPlease ensure cleaned datasets are grouped together by year in the same directory\n")
+
+    get_cleaned_datasets = [
+      inquirer.Text('dir', message="Relative file path to cleaned datasets"),
+      inquirer.Text('year', message="Year of cleaned datasets"),
+    ]
+    answers = inquirer.prompt(get_cleaned_datasets)
+    eda(answers['dir'], answers['year'])
 
   else:
     get_dataset = [
