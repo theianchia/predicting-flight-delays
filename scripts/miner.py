@@ -8,6 +8,8 @@ import numpy as np
 from tabulate import tabulate
 from sklearn.preprocessing import StandardScaler
 
+pd.options.mode.chained_assignment = None
+
 WEATHER_COLS = [
     'time',
     'precipitation_sum (mm)',
@@ -87,6 +89,13 @@ DEST_WEATHER_COLS = {
     'Windgusts': 'Dest Windgusts',
     'Evapotranspiration': 'Dest Evapotranspiration'
 }
+
+WITHOUT_AIRLINE_COLS = [
+  'Delay', 'Origin Precipitation', 'Origin Rain', 'Origin Snowfall', 
+  'Origin Windspeed', 'Origin Windgusts', 'Origin Evapotranspiration', 
+  'Dest Precipitation', 'Dest Rain', 'Dest Snowfall', 'Dest Windspeed', 
+  'Dest Windgusts', 'Dest Evapotranspiration'
+]
 
 class bcolors:
   HEADER = '\033[95m'
@@ -178,6 +187,8 @@ def clean_weather_datasets(directory, year):
 
     df = df[df['time'].dt.year == int(year)]
     selected_df = df[WEATHER_COLS]
+    selected_df['Origin'] = filename.split('.')[0]
+    selected_df['Destination'] = filename.split('.')[0]
     renamed_selected_df = selected_df.rename(columns=WEATHER_COLS_MAP)
 
     if show_sample:
@@ -190,7 +201,7 @@ def clean_weather_datasets(directory, year):
       os.mkdir(WEATHER_OUTPUT_DIR)
 
     new_filename = f"{WEATHER_OUTPUT_DIR}/cleaned_{year}_{filename}"
-    selected_df.to_csv(new_filename, index=False)
+    renamed_selected_df.to_csv(new_filename, index=False)
     successfully_cleaned.insert(0,filename)
     unsuccessfully_cleaned.append('')
 
@@ -207,6 +218,7 @@ def eda(directory, year):
   CLEANED_WEATHER_FILEDIR = f"{directory}/{WEATHER_OUTPUT_DIR}"
 
   show_weather_sample = True
+  counter = 0
 
   if not os.path.isfile(CLEANED_AIRLINE_FILEPATH):
     print("Cleaned Airline Dataset does not exist!")
@@ -219,6 +231,10 @@ def eda(directory, year):
   print('')
 
   for filename in os.listdir(CLEANED_WEATHER_FILEDIR):
+    if (counter % 50 == 0 and counter != 0):
+      print(f"{bcolors.OKGREEN}{counter} origin weather files merged")
+
+    counter += 1
 
     if not os.path.isfile(os.path.join(CLEANED_WEATHER_FILEDIR, filename)) or filename == '.DS_Store':
       continue
@@ -231,7 +247,39 @@ def eda(directory, year):
       print(weather_df.head())
       print('')
       show_weather_sample = False
-      break
+    
+    airline_df.merge(weather_df.set_index(['Date', 'Origin']), on=['Date', 'Origin'])
+    
+  airline_df.rename(columns = ORIGIN_WEATHER_COLS, inplace = True)
+
+  counter = 0
+
+  for filename in os.listdir(CLEANED_WEATHER_FILEDIR):
+    if (counter % 50 == 0 and counter != 0):
+      print(f"{bcolors.OKGREEN}{counter} destination weather files merged")
+
+    counter += 1
+
+    if not os.path.isfile(os.path.join(CLEANED_WEATHER_FILEDIR, filename)) or filename == '.DS_Store':
+      continue
+
+    weather_filepath = os.path.join(CLEANED_WEATHER_FILEDIR, filename)
+    weather_df = pd.read_csv(weather_filepath)
+    
+    airline_df = airline_df.join(weather_df.set_index(['Date', 'Destination']), on=['Date', 'Destination'])
+    
+  airline_df.rename(columns = DEST_WEATHER_COLS, inplace = True)
+
+  scaler = StandardScaler()
+  features_df = airline_df[WITHOUT_AIRLINE_COLS]
+  scaled_features_np = scaler.fit_transform(features_df)
+  scaled_features_df = pd.DataFrame(scaled_features_np , columns=WITHOUT_AIRLINE_COLS)
+
+  print(f"{bcolors.WARNING}\n EDA Column Preview:\n")
+  print(weather_df.head())
+  print('')
+
+  scaled_features_df.to_csv(f"eda_{year}", index=False)
 
 
 if __name__ == '__main__':
