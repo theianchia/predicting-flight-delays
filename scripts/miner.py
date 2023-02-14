@@ -281,10 +281,11 @@ def eda(directory, year):
     weather_filepath = os.path.join(CLEANED_WEATHER_FILEDIR, filename)
     weather_df = pd.read_csv(weather_filepath)
     
-    airline_df = airline_df.join(weather_df.set_index(['Date', 'Destination']), on=['Date', 'Destination'], how='left')
+    weather_dest_df = weather_df[WEATHER_DEST_FEATURE_COLS]
+    airline_df = airline_df.join(weather_dest_df.set_index(['Date', 'Destination']), on=['Date', 'Destination'], how='left')
     
     if counter == 1:
-      airline_df.rename(columns = DEST_WEATHER_COLSS, inplace = True)
+      airline_df.rename(columns = DEST_WEATHER_COLS, inplace = True)
     else:
       for k,v in DEST_WEATHER_COLS.items():
         airline_df[v] = airline_df[v].fillna(airline_df[k])
