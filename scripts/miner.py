@@ -90,6 +90,14 @@ DEST_WEATHER_COLS = {
     'Evapotranspiration': 'Dest Evapotranspiration'
 }
 
+WEATHER_ORIGIN_FEATURE_COLS = [
+  'Date', 'Origin', 'Precipitation', 'Rain', 'Snowfall', 'Windspeed', 'Windgusts', 'Evapotranspiration'
+]
+
+WEATHER_DEST_FEATURE_COLS = [
+  'Date', 'Destination', 'Precipitation', 'Rain', 'Snowfall', 'Windspeed', 'Windgusts', 'Evapotranspiration'
+]
+
 WITHOUT_AIRLINE_COLS = [
   'Delay', 'Origin Precipitation', 'Origin Rain', 'Origin Snowfall', 
   'Origin Windspeed', 'Origin Windgusts', 'Origin Evapotranspiration', 
@@ -231,7 +239,7 @@ def eda(directory, year):
   print('')
 
   for filename in os.listdir(CLEANED_WEATHER_FILEDIR):
-    if (counter % 50 == 0 and counter != 0):
+    if (counter % 20 == 0 and counter != 0):
       print(f"{bcolors.OKGREEN}{counter} origin weather files merged")
 
     counter += 1
@@ -243,19 +251,26 @@ def eda(directory, year):
     weather_df = pd.read_csv(weather_filepath)
 
     if show_weather_sample:
-      print(f"{bcolors.WARNING}\n Weather Column Preview:\n")
+      print(f"{bcolors.WARNING}Weather Column Preview:\n")
       print(weather_df.head())
       print('')
       show_weather_sample = False
-    
-    airline_df.merge(weather_df.set_index(['Date', 'Origin']), on=['Date', 'Origin'])
-    
-  airline_df.rename(columns = ORIGIN_WEATHER_COLS, inplace = True)
+
+    weather_origin_df = weather_df[WEATHER_ORIGIN_FEATURE_COLS]
+    airline_df = airline_df.merge(weather_origin_df.set_index(['Date', 'Origin']), on=['Date', 'Origin'], how='left')
+
+    if counter == 1:
+      airline_df.rename(columns = ORIGIN_WEATHER_COLS, inplace = True)
+
+    else:
+      for k,v in ORIGIN_WEATHER_COLS.items():
+        airline_df[v] = airline_df[v].fillna(airline_df[k])
+        airline_df.drop(k, axis=1, inplace=True)
 
   counter = 0
 
   for filename in os.listdir(CLEANED_WEATHER_FILEDIR):
-    if (counter % 50 == 0 and counter != 0):
+    if (counter % 20 == 0 and counter != 0):
       print(f"{bcolors.OKGREEN}{counter} destination weather files merged")
 
     counter += 1
@@ -266,9 +281,14 @@ def eda(directory, year):
     weather_filepath = os.path.join(CLEANED_WEATHER_FILEDIR, filename)
     weather_df = pd.read_csv(weather_filepath)
     
-    airline_df = airline_df.join(weather_df.set_index(['Date', 'Destination']), on=['Date', 'Destination'])
+    airline_df = airline_df.join(weather_df.set_index(['Date', 'Destination']), on=['Date', 'Destination'], how='left')
     
-  airline_df.rename(columns = DEST_WEATHER_COLS, inplace = True)
+    if counter == 1:
+      airline_df.rename(columns = DEST_WEATHER_COLSS, inplace = True)
+    else:
+      for k,v in DEST_WEATHER_COLS.items():
+        airline_df[v] = airline_df[v].fillna(airline_df[k])
+        airline_df.drop(k, axis=1, inplace=True)
 
   scaler = StandardScaler()
   features_df = airline_df[WITHOUT_AIRLINE_COLS]
@@ -292,7 +312,7 @@ if __name__ == '__main__':
   purpose = inquirer.prompt(get_purpose)
 
   if purpose['purpose'] == 'EDA':
-    print(f"{bcolors.WARNING}\nPlease ensure cleaned datasets are grouped together by year in the same directory\n")
+    print(f"{bcolors.WARNING}Please ensure cleaned datasets are grouped together by year in the same directory\n")
 
     get_cleaned_datasets = [
       inquirer.Text('dir', message="Relative file path to cleaned datasets"),
