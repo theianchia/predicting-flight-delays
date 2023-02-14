@@ -338,7 +338,7 @@ if __name__ == '__main__':
       answers = inquirer.prompt(get_weather_data)
       clean_weather_datasets(answers['dir'], answers['year'])
 
-    elif answers['dataset'] ==  'Airline':
+    elif dataset['dataset'] ==  'Airline':
       get_airline_data = [
         inquirer.Text('dir', message="Relative file path to airline dataset"),
       ]
