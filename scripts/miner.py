@@ -99,7 +99,7 @@ WEATHER_DEST_FEATURE_COLS = [
 ]
 
 WITHOUT_AIRLINE_COLS = [
-  'Delay', 'Origin Precipitation', 'Origin Rain', 'Origin Snowfall', 
+  'Origin Precipitation', 'Origin Rain', 'Origin Snowfall', 
   'Origin Windspeed', 'Origin Windgusts', 'Origin Evapotranspiration', 
   'Dest Precipitation', 'Dest Rain', 'Dest Snowfall', 'Dest Windspeed', 
   'Dest Windgusts', 'Dest Evapotranspiration'
@@ -295,9 +295,12 @@ def eda(directory, year):
   features_df = airline_df[WITHOUT_AIRLINE_COLS]
   scaled_features_np = scaler.fit_transform(features_df)
   scaled_features_df = pd.DataFrame(scaled_features_np , columns=WITHOUT_AIRLINE_COLS)
+  scaled_features_df['Delay'] = airline_df['Delay']
+  scaled_features_df[list(AIRLINES_MAP.values())] = airline_df[list(AIRLINES_MAP.values())]
 
-  print(f"{bcolors.WARNING}\n EDA Column Preview:\n")
-  print(scaled_features_df.head())
+
+  print(f"{bcolors.WARNING}Non Airline Pre-Standardization Features Preview:\n")
+  print(features_df.head(20))
   print('')
 
   scaled_features_df.to_csv(f"eda_{year}.csv", index=False)
