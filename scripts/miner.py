@@ -297,10 +297,10 @@ def eda(directory, year):
   scaled_features_df = pd.DataFrame(scaled_features_np , columns=WITHOUT_AIRLINE_COLS)
 
   print(f"{bcolors.WARNING}\n EDA Column Preview:\n")
-  print(weather_df.head())
+  print(scaled_features_df.head())
   print('')
 
-  scaled_features_df.to_csv(f"eda_{year}", index=False)
+  scaled_features_df.to_csv(f"eda_{year}.csv", index=False)
 
 
 if __name__ == '__main__':
