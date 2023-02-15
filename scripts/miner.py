@@ -301,7 +301,7 @@ def eda(directory, year):
 
 
   print(f"{bcolors.WARNING}EDA Features Preview:\n")
-  print(airline_df.head(20))
+  print(airline_df.head(5))
   print('')
 
   airline_df.to_csv(f"eda_{year}.csv", index=False)
