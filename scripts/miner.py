@@ -300,8 +300,8 @@ def eda(directory, year):
   # scaled_features_df[list(AIRLINES_MAP.values())] = airline_df[list(AIRLINES_MAP.values())]
 
 
-  print(f"{bcolors.WARNING}EDA Features Preview:\n")
-  print(airline_df.head(5))
+  print(f"{bcolors.WARNING}EDA Features w/o Airlines Preview:\n")
+  print(airline_df[WITHOUT_AIRLINE_COLS].head())
   print('')
 
   airline_df.to_csv(f"eda_{year}.csv", index=False)
