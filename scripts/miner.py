@@ -18,6 +18,7 @@ WEATHER_COLS = [
     'windspeed_10m_max (km/h)',
     'windgusts_10m_max (km/h)',
     'et0_fao_evapotranspiration (mm)',
+    'shortwave_radiation_sum (MJ/m²)',
 ]
 
 WEATHER_COLS_MAP = {
@@ -27,7 +28,8 @@ WEATHER_COLS_MAP = {
     'snowfall_sum (cm)': 'Snowfall',
     'windspeed_10m_max (km/h)': 'Windspeed',
     'windgusts_10m_max (km/h)': 'Windgusts',
-    'et0_fao_evapotranspiration (mm)': 'Evapotranspiration'
+    'et0_fao_evapotranspiration (mm)': 'Evapotranspiration',
+    'shortwave_radiation_sum (MJ/m²)': 'Shortwave Radiation',
 }
 
 WEATHER_OUTPUT_DIR = 'cleaned_weather'
@@ -35,16 +37,22 @@ WEATHER_OUTPUT_DIR = 'cleaned_weather'
 AIRLINE_COLS = [
   'FL_DATE',
   'OP_CARRIER',
+  'OP_CARRIER_FL_NUM',
+  'CRS_DEP_TIME',
   'ORIGIN',
-  'DEST',
-  'Delay'
+  'DISTANCE',
+  'DEP_DELAY',
 ]
 
 AIRLINE_COLS_MAP = {
   'FL_DATE': 'Date',
   'ORIGIN': 'Origin',
   'DEST': 'Destination',
-  'OP_CARRIER': 'Carrier'
+  'OP_CARRIER': 'Carrier',
+  'OP_CARRIER_FL_NUM': 'Flight Num',
+  'CRS_DEP_TIME': 'Departure Time',
+  'DISTANCE': 'Distance',
+  'DEP_DELAY': 'Delay'
 }
 
 AIRLINES_MAP = {
@@ -78,31 +86,18 @@ ORIGIN_WEATHER_COLS = {
     'Snowfall': 'Origin Snowfall',
     'Windspeed': 'Origin Windspeed', 
     'Windgusts': 'Origin Windgusts',
-    'Evapotranspiration': 'Origin Evapotranspiration'
-}
-
-DEST_WEATHER_COLS = {
-    'Precipitation': 'Dest Precipitation', 
-    'Rain': 'Dest Rain', 
-    'Snowfall': 'Dest Snowfall',
-    'Windspeed': 'Dest Windspeed', 
-    'Windgusts': 'Dest Windgusts',
-    'Evapotranspiration': 'Dest Evapotranspiration'
+    'Evapotranspiration': 'Origin Evapotranspiration',
+    'Shortwave Radiation': 'Origin Shortwave Radiation',
 }
 
 WEATHER_ORIGIN_FEATURE_COLS = [
-  'Date', 'Origin', 'Precipitation', 'Rain', 'Snowfall', 'Windspeed', 'Windgusts', 'Evapotranspiration'
-]
-
-WEATHER_DEST_FEATURE_COLS = [
-  'Date', 'Destination', 'Precipitation', 'Rain', 'Snowfall', 'Windspeed', 'Windgusts', 'Evapotranspiration'
+  'Date', 'Origin', 'Precipitation', 'Rain', 'Snowfall', 'Windspeed', 'Windgusts', 'Evapotranspiration', 'Shortwave Radiation'
 ]
 
 WITHOUT_AIRLINE_COLS = [
   'Origin Precipitation', 'Origin Rain', 'Origin Snowfall', 
-  'Origin Windspeed', 'Origin Windgusts', 'Origin Evapotranspiration', 
-  'Dest Precipitation', 'Dest Rain', 'Dest Snowfall', 'Dest Windspeed', 
-  'Dest Windgusts', 'Dest Evapotranspiration'
+  'Origin Windspeed', 'Origin Windgusts', 'Origin Evapotranspiration',
+  'Origin Shortwave Radiation',
 ]
 
 class bcolors:
@@ -132,7 +127,6 @@ def clean_airline_datasets(directory):
     
     filepath = os.path.join(directory, filename)
     df = pd.read_csv(filepath)
-    df['Delay'] = (df['ACTUAL_ELAPSED_TIME'] - df['CRS_ELAPSED_TIME']).to_numpy()
 
     selected_df = df[AIRLINE_COLS]
     print(selected_df.head())
@@ -196,7 +190,6 @@ def clean_weather_datasets(directory, year):
     df = df[df['time'].dt.year == int(year)]
     selected_df = df[WEATHER_COLS]
     selected_df['Origin'] = filename.split('.')[0]
-    selected_df['Destination'] = filename.split('.')[0]
     renamed_selected_df = selected_df.rename(columns=WEATHER_COLS_MAP)
 
     if show_sample:
@@ -264,30 +257,6 @@ def eda(directory, year):
 
     else:
       for k,v in ORIGIN_WEATHER_COLS.items():
-        airline_df[v] = airline_df[v].fillna(airline_df[k])
-        airline_df.drop(k, axis=1, inplace=True)
-
-  counter = 0
-
-  for filename in os.listdir(CLEANED_WEATHER_FILEDIR):
-    if (counter % 20 == 0 and counter != 0):
-      print(f"{bcolors.OKGREEN}{counter} destination weather files merged")
-
-    counter += 1
-
-    if not os.path.isfile(os.path.join(CLEANED_WEATHER_FILEDIR, filename)) or filename == '.DS_Store':
-      continue
-
-    weather_filepath = os.path.join(CLEANED_WEATHER_FILEDIR, filename)
-    weather_df = pd.read_csv(weather_filepath)
-    
-    weather_dest_df = weather_df[WEATHER_DEST_FEATURE_COLS]
-    airline_df = airline_df.join(weather_dest_df.set_index(['Date', 'Destination']), on=['Date', 'Destination'], how='left')
-    
-    if counter == 1:
-      airline_df.rename(columns = DEST_WEATHER_COLS, inplace = True)
-    else:
-      for k,v in DEST_WEATHER_COLS.items():
         airline_df[v] = airline_df[v].fillna(airline_df[k])
         airline_df.drop(k, axis=1, inplace=True)
 
