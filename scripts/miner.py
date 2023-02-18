@@ -117,6 +117,11 @@ AIRPORT_COLS = [
   'Total Monthly International',
 ]
 
+ORIGIN_AIRPORT_COLS = {
+  'Total Monthly Domestic': 'Origin Total Monthly Domestic',
+  'Total Monthly International': 'Origin Total Monthly International',
+}
+
 class bcolors:
   HEADER = '\033[95m'
   OKBLUE = '\033[94m'
@@ -217,6 +222,8 @@ def clean_airport_datasets(directory):
     airport_df['Origin'] = airport_code
     airport_df = airport_df.rename(columns=AIRPORT_COLS_MAP)
     selected_airport_df = airport_df[AIRPORT_COLS]
+    selected_airport_df['Total Monthly Domestic'].fillna(0, inplace=True)
+    selected_airport_df['Total Monthly International'].fillna(0.0, inplace=True)
 
     if show_sample:
       print(f"{bcolors.WARNING}Column Preview:\n")
@@ -296,8 +303,10 @@ def eda(directory, year):
 
   CLEANED_AIRLINE_FILEPATH = f"{directory}/{AIRLINE_OUTPUT_DIR}/cleaned_airline_cancel_data_{year}.csv"
   CLEANED_WEATHER_FILEDIR = f"{directory}/{WEATHER_OUTPUT_DIR}"
+  CLEANED_AIRPORT_FILEDIR = f"{directory}/{AIRPORT_OUTPUT_DIR}"
 
   show_weather_sample = True
+  show_airport_sample = True
   counter = 0
 
   if not os.path.isfile(CLEANED_AIRLINE_FILEPATH):
@@ -306,13 +315,51 @@ def eda(directory, year):
 
   airline_df = pd.read_csv(CLEANED_AIRLINE_FILEPATH)
   
-  print(f"{bcolors.WARNING}\n Airline Column Preview:\n")
+  print(f"{bcolors.WARNING}Airline Column Preview:\n")
   print(airline_df.head())
   print('')
 
+  airline_df['Date'] = airline_df['Date'].astype(str)
+  airline_df = airline_df[airline_df['Date'] != 'nan']
+  airline_df['Year'] = airline_df['Date'].apply(lambda x: int(str(x).split('-')[0]))
+  airline_df['Month'] = airline_df['Date'].apply(lambda x: int(str(x).split('-')[1]))
+
+  for filename in os.listdir(CLEANED_AIRPORT_FILEDIR):
+    if (counter % 20 == 0 and counter != 0):
+      print(f"{bcolors.OKGREEN}{counter} airport files merged")
+
+    counter += 1
+
+    if not os.path.isfile(os.path.join(CLEANED_AIRPORT_FILEDIR, filename)) or filename == '.DS_Store':
+      continue
+
+    airport_filepath = os.path.join(CLEANED_AIRPORT_FILEDIR, filename)
+    airport_df = pd.read_csv(airport_filepath)
+
+    airport_df['Total Monthly Domestic'].fillna(0, inplace=True)
+    airport_df['Total Monthly International'].fillna(0.0, inplace=True)
+
+    if show_airport_sample:
+      print(f"{bcolors.WARNING}Airport Column Preview:\n")
+      print(airport_df.head())
+      print('')
+      show_airport_sample = False
+
+    airline_df = airline_df.merge(airport_df.set_index(['Year', 'Month', 'Origin']), on=['Year', 'Month', 'Origin'], how='left')
+
+    if counter == 1:
+      airline_df.rename(columns = ORIGIN_AIRPORT_COLS, inplace = True)
+
+    else:
+      for k,v in ORIGIN_AIRPORT_COLS.items():
+        airline_df[v] = airline_df[v].fillna(airline_df[k])
+        airline_df.drop(k, axis=1, inplace=True)
+
+  counter = 0
+
   for filename in os.listdir(CLEANED_WEATHER_FILEDIR):
     if (counter % 20 == 0 and counter != 0):
-      print(f"{bcolors.OKGREEN}{counter} origin weather files merged")
+      print(f"{bcolors.OKGREEN}{counter} weather files merged")
 
     counter += 1
 
