@@ -95,6 +95,7 @@ WEATHER_ORIGIN_FEATURE_COLS = [
 ]
 
 WITHOUT_AIRLINE_COLS = [
+  'Origin Total Monthly Domestic', 'Origin Total Monthly International',
   'Origin Precipitation', 'Origin Rain', 'Origin Snowfall', 
   'Origin Windspeed', 'Origin Windgusts', 'Origin Evapotranspiration',
   'Origin Shortwave Radiation',
@@ -315,7 +316,7 @@ def eda(directory, year):
 
   airline_df = pd.read_csv(CLEANED_AIRLINE_FILEPATH)
   
-  print(f"{bcolors.WARNING}Airline Column Preview:\n")
+  print(f"{bcolors.WARNING}\nAirline Column Preview:\n")
   print(airline_df.head())
   print('')
 
@@ -340,7 +341,7 @@ def eda(directory, year):
     airport_df['Total Monthly International'].fillna(0.0, inplace=True)
 
     if show_airport_sample:
-      print(f"{bcolors.WARNING}Airport Column Preview:\n")
+      print(f"{bcolors.WARNING}\nAirport Column Preview:\n")
       print(airport_df.head())
       print('')
       show_airport_sample = False
@@ -370,7 +371,7 @@ def eda(directory, year):
     weather_df = pd.read_csv(weather_filepath)
 
     if show_weather_sample:
-      print(f"{bcolors.WARNING}Weather Column Preview:\n")
+      print(f"{bcolors.WARNING}\nWeather Column Preview:\n")
       print(weather_df.head())
       print('')
       show_weather_sample = False
