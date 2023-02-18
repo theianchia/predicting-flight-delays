@@ -11,25 +11,25 @@ from sklearn.preprocessing import StandardScaler
 pd.options.mode.chained_assignment = None
 
 WEATHER_COLS = [
-    'time',
-    'precipitation_sum (mm)',
-    'rain_sum (mm)',
-    'snowfall_sum (cm)',
-    'windspeed_10m_max (km/h)',
-    'windgusts_10m_max (km/h)',
-    'et0_fao_evapotranspiration (mm)',
-    'shortwave_radiation_sum (MJ/m²)',
+  'time',
+  'precipitation_sum (mm)',
+  'rain_sum (mm)',
+  'snowfall_sum (cm)',
+  'windspeed_10m_max (km/h)',
+  'windgusts_10m_max (km/h)',
+  'et0_fao_evapotranspiration (mm)',
+  'shortwave_radiation_sum (MJ/m²)',
 ]
 
 WEATHER_COLS_MAP = {
-    'time': 'Date',
-    'precipitation_sum (mm)': 'Precipitation',
-    'rain_sum (mm)': 'Rain',
-    'snowfall_sum (cm)': 'Snowfall',
-    'windspeed_10m_max (km/h)': 'Windspeed',
-    'windgusts_10m_max (km/h)': 'Windgusts',
-    'et0_fao_evapotranspiration (mm)': 'Evapotranspiration',
-    'shortwave_radiation_sum (MJ/m²)': 'Shortwave Radiation',
+  'time': 'Date',
+  'precipitation_sum (mm)': 'Precipitation',
+  'rain_sum (mm)': 'Rain',
+  'snowfall_sum (cm)': 'Snowfall',
+  'windspeed_10m_max (km/h)': 'Windspeed',
+  'windgusts_10m_max (km/h)': 'Windgusts',
+  'et0_fao_evapotranspiration (mm)': 'Evapotranspiration',
+  'shortwave_radiation_sum (MJ/m²)': 'Shortwave Radiation',
 }
 
 WEATHER_OUTPUT_DIR = 'cleaned_weather'
@@ -81,13 +81,13 @@ AIRLINE_OUTPUT_DIR = 'cleaned_airline'
 TABLE_HEADERS = ['Successful', 'Unsuccessful']
 
 ORIGIN_WEATHER_COLS = {
-    'Precipitation': 'Origin Precipitation', 
-    'Rain': 'Origin Rain', 
-    'Snowfall': 'Origin Snowfall',
-    'Windspeed': 'Origin Windspeed', 
-    'Windgusts': 'Origin Windgusts',
-    'Evapotranspiration': 'Origin Evapotranspiration',
-    'Shortwave Radiation': 'Origin Shortwave Radiation',
+  'Precipitation': 'Origin Precipitation', 
+  'Rain': 'Origin Rain', 
+  'Snowfall': 'Origin Snowfall',
+  'Windspeed': 'Origin Windspeed', 
+  'Windgusts': 'Origin Windgusts',
+  'Evapotranspiration': 'Origin Evapotranspiration',
+  'Shortwave Radiation': 'Origin Shortwave Radiation',
 }
 
 WEATHER_ORIGIN_FEATURE_COLS = [
@@ -98,6 +98,23 @@ WITHOUT_AIRLINE_COLS = [
   'Origin Precipitation', 'Origin Rain', 'Origin Snowfall', 
   'Origin Windspeed', 'Origin Windgusts', 'Origin Evapotranspiration',
   'Origin Shortwave Radiation',
+]
+
+MASTER_AIRPORT_FILE = ('T_MASTER_CORD.csv')
+
+AIRPORT_OUTPUT_DIR = 'cleaned_airport'
+
+AIRPORT_COLS_MAP = {
+  'DOMESTIC': 'Total Monthly Domestic', 
+  'INTERNATIONAL': 'Total Monthly International', 
+}
+
+AIRPORT_COLS = [
+  'Year',
+  'Month',
+  'Origin',
+  'Total Monthly Domestic',
+  'Total Monthly International',
 ]
 
 class bcolors:
@@ -158,6 +175,68 @@ def clean_airline_datasets(directory):
   print(tabulate(table, TABLE_HEADERS, tablefmt="simple_outline"))
 
 
+def clean_airport_datasets(directory):
+  successfully_cleaned = []
+  unsuccessfully_cleaned = []
+  show_sample = True
+
+  if not os.path.exists(os.path.join(directory, MASTER_AIRPORT_FILE)):
+    print("Master Airport File does not exist!")
+    return
+
+  master_airport_df = pd.read_csv(os.path.join(directory, MASTER_AIRPORT_FILE))
+
+  if not os.path.exists(directory):
+    print("Directory does not exist!")
+    return
+
+  counter = 0
+
+  for filename in os.listdir(directory):
+    if (counter % 20 == 0 and counter != 0):
+      print(f"{bcolors.OKGREEN}{counter} files touched")
+
+    counter += 1
+
+    if not os.path.isfile(os.path.join(directory, filename)) or filename == '.DS_Store'  or filename == MASTER_AIRPORT_FILE:
+      continue
+
+    filepath = os.path.join(directory, filename)
+
+    with open(filepath) as f:
+      firstline = f.readline()
+    airport_name = firstline.split(':')[1].split('(Origin Airport)')[0].strip()
+
+    target_airport = master_airport_df.loc[master_airport_df['DISPLAY_AIRPORT_NAME'] == airport_name]
+
+    airport_history = master_airport_df.loc[master_airport_df['DISPLAY_AIRPORT_NAME'] == airport_name]
+    airport_code = airport_history.loc[target_airport['AIRPORT_IS_LATEST'] == 1]['AIRPORT'].item()
+
+    airport_df = pd.read_html(filepath)[0]
+    airport_df = airport_df.loc[airport_df['Month'] != 'TOTAL']
+    airport_df['Origin'] = airport_code
+    airport_df = airport_df.rename(columns=AIRPORT_COLS_MAP)
+    selected_airport_df = airport_df[AIRPORT_COLS]
+
+    if show_sample:
+      print(f"{bcolors.WARNING}Column Preview:\n")
+      print(selected_airport_df.head())
+      print('')
+      show_sample = False
+
+    if not os.path.exists(AIRPORT_OUTPUT_DIR) or not os.path.isdir(AIRPORT_OUTPUT_DIR):
+      os.mkdir(AIRPORT_OUTPUT_DIR)
+    
+    new_filename = f"{AIRPORT_OUTPUT_DIR}/cleaned_airport_{airport_code}.csv"
+    selected_airport_df.to_csv(new_filename, index=False)
+    successfully_cleaned.insert(0, airport_code)
+    unsuccessfully_cleaned.append('')
+
+  table = np.stack([successfully_cleaned, unsuccessfully_cleaned], axis=-1)
+  print('')
+  print(tabulate(table, TABLE_HEADERS, tablefmt="simple_outline"))
+
+
 def clean_weather_datasets(directory, year):
   successfully_cleaned = []
   unsuccessfully_cleaned = []
@@ -193,7 +272,7 @@ def clean_weather_datasets(directory, year):
     renamed_selected_df = selected_df.rename(columns=WEATHER_COLS_MAP)
 
     if show_sample:
-      print(f"{bcolors.WARNING}\nColumn Preview:\n")
+      print(f"{bcolors.WARNING}Column Preview:\n")
       print(renamed_selected_df.head())
       print('')
       show_sample = False
@@ -299,7 +378,7 @@ if __name__ == '__main__':
     get_dataset = [
       inquirer.List('dataset',
         message='Which dataset are you cleaning?',
-        choices=['Weather', 'Airline'],
+        choices=['Weather', 'Airline', 'Airport'],
       ),
     ]
     dataset = inquirer.prompt(get_dataset)
@@ -318,3 +397,10 @@ if __name__ == '__main__':
       ]
       answers = inquirer.prompt(get_airline_data)
       clean_airline_datasets(answers['dir'])
+
+    elif dataset['dataset'] ==  'Airport':
+      get_airport_data = [
+        inquirer.Text('dir', message="Relative file path to airport dataset"),
+      ]
+      answers = inquirer.prompt(get_airport_data)
+      clean_airport_datasets(answers['dir'])
