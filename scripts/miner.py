@@ -7,7 +7,7 @@ import pandas as pd
 import numpy as np
 # from sklearn.preprocessing import StandardScaler
 
-from . import constants, helpers
+import constants, helpers
 
 pd.options.mode.chained_assignment = None
 

@@ -1,6 +1,6 @@
 from tabulate import tabulate
 
-from . import constants
+import constants
 
 def print_df_preview(df, dataset_type):
   print(f"{constants.bcolors.WARNING}\n{dataset_type} Column Preview:\n")
