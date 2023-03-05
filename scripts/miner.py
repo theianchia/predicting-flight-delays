@@ -30,7 +30,7 @@ def clean_airline_datasets(directory):
 
     selected_df = df[constants.AIRLINE_COLS]
     selected_df.rename(columns=constants.AIRLINE_COLS_RENAME, inplace=True)
-    selected_df['Carrier'].replace(AIRLINES_RENAME, inplace=True)
+    selected_df['Carrier'].replace(constants.AIRLINES_RENAME, inplace=True)
 
     encoded_airlines_df = pd.get_dummies(selected_df['Carrier'])
 
@@ -159,7 +159,7 @@ def clean_weather_datasets(directory, year):
     successfully_cleaned.insert(0,filename)
     unsuccessfully_cleaned.append('')
 
-    helpers.print_success_status_table(successfully_cleaned, unsuccessfully_cleaned)
+  helpers.print_success_status_table(successfully_cleaned, unsuccessfully_cleaned)
 
 
 def eda(directory, year):

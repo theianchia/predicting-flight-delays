@@ -1,4 +1,5 @@
 from tabulate import tabulate
+import numpy as np
 
 import constants
 
@@ -10,5 +11,5 @@ def print_df_preview(df, dataset_type):
 
 def print_success_status_table(successfully_cleaned, unsuccessfully_cleaned):
   table = np.stack([successfully_cleaned, unsuccessfully_cleaned], axis=-1)
-  print('')
+  print(f"{constants.bcolors.OKGREEN}")
   print(tabulate(table, constants.TABLE_HEADERS, tablefmt="simple_outline", showindex="always"))
