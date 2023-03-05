@@ -96,7 +96,7 @@ MERGED_AIRPORT_COLS_RENAME = {
 }
 
 EDA_WITHOUT_AIRLINE_COLS = [
-  'Origin Total Monthly Domestic', 'Origin Total Monthly International',
+  'Origin Total Operations',
   'Origin Precipitation', 'Origin Rain', 'Origin Snowfall', 
   'Origin Windspeed', 'Origin Windgusts', 'Origin Evapotranspiration',
   'Origin Shortwave Radiation',
