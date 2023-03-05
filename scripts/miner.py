@@ -53,61 +53,37 @@ def clean_airline_datasets(directory):
   helpers.print_success_status_table(successfully_cleaned, unsuccessfully_cleaned)
 
 
-def clean_airport_datasets(directory):
+def clean_airport_datasets(directory, year):
   successfully_cleaned = []
   unsuccessfully_cleaned = []
   show_sample = True
-
-  if not os.path.exists(os.path.join(directory, constants.MASTER_AIRPORT_FILE)):
-    print("Master Airport File does not exist!")
-    return
-
-  master_airport_df = pd.read_csv(os.path.join(directory, constants.MASTER_AIRPORT_FILE))
 
   if not os.path.exists(directory):
     print("Directory does not exist!")
     return
 
-  counter = 0
-
   for filename in os.listdir(directory):
-    if (counter % 20 == 0 and counter != 0):
-      print(f"{constants.bcolors.OKGREEN}{counter} files touched")
 
-    counter += 1
-
-    if not os.path.isfile(os.path.join(directory, filename)) or filename == '.DS_Store'  or filename == constants.MASTER_AIRPORT_FILE:
+    if not os.path.isfile(os.path.join(directory, filename)) or filename == '.DS_Store':
       continue
 
     filepath = os.path.join(directory, filename)
 
-    with open(filepath) as f:
-      firstline = f.readline()
-    airport_name = firstline.split(':')[1].split('(Origin Airport)')[0].strip()
-
-    target_airport = master_airport_df.loc[master_airport_df['DISPLAY_AIRPORT_NAME'] == airport_name]
-
-    airport_history = master_airport_df.loc[master_airport_df['DISPLAY_AIRPORT_NAME'] == airport_name]
-    airport_code = airport_history.loc[target_airport['AIRPORT_IS_LATEST'] == 1]['AIRPORT'].item()
-
-    airport_df = pd.read_html(filepath)[0]
-    airport_df = airport_df.loc[airport_df['Month'] != 'TOTAL']
-    airport_df['Origin'] = airport_code
-    airport_df = airport_df.rename(columns=constants.AIRPORT_COLS_RENAME)
-    selected_airport_df = airport_df[constants.AIRPORT_COLS]
-    selected_airport_df['Total Monthly Domestic'].fillna(0, inplace=True)
-    selected_airport_df['Total Monthly International'].fillna(0.0, inplace=True)
+    airport_df = pd.read_csv(filepath)
+    selected_year_airport_df = airport_df[airport_df['Year'] == int(year)]
+    renamed_selected_df = selected_year_airport_df.rename(columns=constants.AIRPORT_COLS_RENAME)
+    renamed_selected_df['Destination'] = renamed_selected_df['Origin']
 
     if show_sample:
-      helpers.print_df_preview(selected_airport_df, "Airport")
+      helpers.print_df_preview(renamed_selected_df, "Airport")
       show_sample = False
 
     if not os.path.exists(constants.AIRPORT_OUTPUT_DIR) or not os.path.isdir(constants.AIRPORT_OUTPUT_DIR):
       os.mkdir(constants.AIRPORT_OUTPUT_DIR)
     
-    new_filename = f"{constants.AIRPORT_OUTPUT_DIR}/cleaned_airport_{airport_code}.csv"
-    selected_airport_df.to_csv(new_filename, index=False)
-    successfully_cleaned.insert(0, airport_code)
+    new_filename = f"{constants.AIRPORT_OUTPUT_DIR}/cleaned_airport_{year}.csv"
+    renamed_selected_df.to_csv(new_filename, index=False)
+    successfully_cleaned.insert(0, year)
     unsuccessfully_cleaned.append('')
 
   helpers.print_success_status_table(successfully_cleaned, unsuccessfully_cleaned)
@@ -302,6 +278,7 @@ if __name__ == '__main__':
     elif dataset['dataset'] ==  'Airport':
       get_airport_data = [
         inquirer.Text('dir', message="Relative file path to airport dataset"),
+        inquirer.Text('year', message="Year of airport dataset"),
       ]
       answers = inquirer.prompt(get_airport_data)
-      clean_airport_datasets(answers['dir'])
+      clean_airport_datasets(answers['dir'], answers['year'])

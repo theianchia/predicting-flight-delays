@@ -1,7 +1,6 @@
 WEATHER_OUTPUT_DIR = 'cleaned_weather'
 AIRLINE_OUTPUT_DIR = 'cleaned_airline'
 AIRPORT_OUTPUT_DIR = 'cleaned_airport'
-MASTER_AIRPORT_FILE = 'T_MASTER_CORD.csv'
 
 TABLE_HEADERS = ['Successful', 'Unsuccessful']
 
@@ -81,16 +80,16 @@ MERGED_WEATHER_COLS_RENAME = {
 }
 
 AIRPORT_COLS_RENAME = {
-  'DOMESTIC': 'Total Monthly Domestic', 
-  'INTERNATIONAL': 'Total Monthly International', 
+  'Airport': 'Origin', 
+  'TotalOperations': 'Total Operations', 
 }
 
 AIRPORT_COLS = [
   'Year',
   'Month',
   'Origin',
-  'Total Monthly Domestic',
-  'Total Monthly International',
+  'Destination'
+  'Total Operations',
 ]
 
 MERGED_AIRPORT_COLS_RENAME = {
