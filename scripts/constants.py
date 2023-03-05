@@ -88,13 +88,11 @@ AIRPORT_COLS = [
   'Year',
   'Month',
   'Origin',
-  'Destination'
   'Total Operations',
 ]
 
 MERGED_AIRPORT_COLS_RENAME = {
-  'Total Monthly Domestic': 'Origin Total Monthly Domestic',
-  'Total Monthly International': 'Origin Total Monthly International',
+  'Total Operations': 'Origin Total Operations',
 }
 
 EDA_WITHOUT_AIRLINE_COLS = [

@@ -72,7 +72,7 @@ def clean_airport_datasets(directory, year):
     airport_df = pd.read_csv(filepath)
     selected_year_airport_df = airport_df[airport_df['Year'] == int(year)]
     renamed_selected_df = selected_year_airport_df.rename(columns=constants.AIRPORT_COLS_RENAME)
-    renamed_selected_df['Destination'] = renamed_selected_df['Origin']
+    # renamed_selected_df['Destination'] = renamed_selected_df['Origin']
 
     if show_sample:
       helpers.print_df_preview(renamed_selected_df, "Airport")
@@ -143,11 +143,10 @@ def eda(directory, year):
     return "Directory does not exist!"
 
   CLEANED_AIRLINE_FILEPATH = f"{directory}/{constants.AIRLINE_OUTPUT_DIR}/cleaned_airline_cancel_data_{year}.csv"
+  CLEANED_AIRPORT_FILEPATH = f"{directory}/{constants.AIRPORT_OUTPUT_DIR}/cleaned_airport_{year}.csv"
   CLEANED_WEATHER_FILEDIR = f"{directory}/{constants.WEATHER_OUTPUT_DIR}"
-  CLEANED_AIRPORT_FILEDIR = f"{directory}/{constants.AIRPORT_OUTPUT_DIR}"
 
   show_weather_sample = True
-  show_airport_sample = True
   counter = 0
 
   if not os.path.isfile(CLEANED_AIRLINE_FILEPATH):
@@ -162,36 +161,18 @@ def eda(directory, year):
   airline_df['Year'] = airline_df['Date'].apply(lambda x: int(str(x).split('-')[0]))
   airline_df['Month'] = airline_df['Date'].apply(lambda x: int(str(x).split('-')[1]))
 
-  for filename in os.listdir(CLEANED_AIRPORT_FILEDIR):
-    if (counter % 20 == 0 and counter != 0):
-      print(f"{constants.bcolors.OKGREEN}{counter} airport files merged")
+  if not os.path.isfile(CLEANED_AIRPORT_FILEPATH):
+    print("Cleaned Airport Dataset does not exist!")
+    return
 
-    counter += 1
+  airport_df = pd.read_csv(CLEANED_AIRPORT_FILEPATH)
+  helpers.print_df_preview(airport_df, "Airport")
 
-    if not os.path.isfile(os.path.join(CLEANED_AIRPORT_FILEDIR, filename)) or filename == '.DS_Store':
-      continue
+  airline_df = airline_df.merge(airport_df.set_index(['Year', 'Month', 'Origin']), on=['Year', 'Month', 'Origin'], how='left')
 
-    airport_filepath = os.path.join(CLEANED_AIRPORT_FILEDIR, filename)
-    airport_df = pd.read_csv(airport_filepath)
+  airline_df.rename(columns = constants.MERGED_AIRPORT_COLS_RENAME, inplace = True)
 
-    airport_df['Total Monthly Domestic'].fillna(0, inplace=True)
-    airport_df['Total Monthly International'].fillna(0.0, inplace=True)
-
-    if show_airport_sample:
-      helpers.print_df_preview(airport_df, "Airport")
-      show_airport_sample = False
-
-    airline_df = airline_df.merge(airport_df.set_index(['Year', 'Month', 'Origin']), on=['Year', 'Month', 'Origin'], how='left')
-
-    if counter == 1:
-      airline_df.rename(columns = constants.MERGED_AIRPORT_COLS_RENAME, inplace = True)
-
-    else:
-      for k,v in constants.MERGED_AIRPORT_COLS_RENAME.items():
-        airline_df[v] = airline_df[v].fillna(airline_df[k])
-        airline_df.drop(k, axis=1, inplace=True)
-
-  counter = 0
+  helpers.print_df_preview(airline_df[EDA_WITHOUT_AIRLINE_COLS], "After merging Airport Data")
 
   for filename in os.listdir(CLEANED_WEATHER_FILEDIR):
     if (counter % 20 == 0 and counter != 0):
