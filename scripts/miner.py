@@ -172,7 +172,7 @@ def eda(directory, year):
 
   airline_df.rename(columns = constants.MERGED_AIRPORT_COLS_RENAME, inplace = True)
 
-  helpers.print_df_preview(airline_df[EDA_WITHOUT_AIRLINE_COLS], "After merging Airport Data")
+  helpers.print_df_preview(airline_df, "After merging Airport Data")
 
   for filename in os.listdir(CLEANED_WEATHER_FILEDIR):
     if (counter % 20 == 0 and counter != 0):
@@ -208,7 +208,7 @@ def eda(directory, year):
   # scaled_features_df['Delay'] = airline_df['Delay']
   # scaled_features_df[list(AIRLINES_MAP.values())] = airline_df[list(AIRLINES_MAP.values())]
 
-  helpers.print_df_preview(airline_df[EDA_WITHOUT_AIRLINE_COLS], "EDA Features w/o Airlines")
+  helpers.print_df_preview(airline_df[constants.EDA_WITHOUT_AIRLINE_COLS], "EDA Features w/o Airlines")
 
   airline_df.to_csv(f"eda_{year}.csv", index=False)
 
@@ -223,7 +223,7 @@ if __name__ == '__main__':
   purpose = inquirer.prompt(get_purpose)
 
   if purpose['purpose'] == 'EDA':
-    print(f"{bcolors.WARNING}Please ensure cleaned datasets are grouped together by year in the same directory\n")
+    print(f"{constants.bcolors.OKBLUE}Please ensure cleaned datasets are grouped together by year in the same directory\n")
 
     get_cleaned_datasets = [
       inquirer.Text('dir', message="Relative file path to cleaned datasets"),
