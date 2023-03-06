@@ -13,6 +13,7 @@ AIRLINE_COLS = [
   'DEST',
   'DISTANCE',
   'DEP_DELAY',
+  'Flight Delay'
 ]
 
 AIRLINE_COLS_RENAME = {
@@ -23,7 +24,7 @@ AIRLINE_COLS_RENAME = {
   'OP_CARRIER_FL_NUM': 'Flight Num',
   'CRS_DEP_TIME': 'Departure Time',
   'DISTANCE': 'Distance',
-  'DEP_DELAY': 'Delay'
+  'DEP_DELAY': 'Departure Delay'
 }
 
 AIRLINES_RENAME = {
@@ -69,16 +70,6 @@ WEATHER_COLS_RENAME = {
   'shortwave_radiation_sum (MJ/m²)': 'Shortwave Radiation',
 }
 
-MERGED_WEATHER_COLS_RENAME = {
-  'Precipitation': 'Origin Precipitation', 
-  'Rain': 'Origin Rain', 
-  'Snowfall': 'Origin Snowfall',
-  'Windspeed': 'Origin Windspeed', 
-  'Windgusts': 'Origin Windgusts',
-  'Evapotranspiration': 'Origin Evapotranspiration',
-  'Shortwave Radiation': 'Origin Shortwave Radiation',
-}
-
 AIRPORT_COLS_RENAME = {
   'Airport': 'Origin', 
   'TotalOperations': 'Total Operations', 
@@ -91,15 +82,44 @@ AIRPORT_COLS = [
   'Total Operations',
 ]
 
-MERGED_AIRPORT_COLS_RENAME = {
+MERGED_ORIGIN_AIRPORT_COLS_RENAME = {
   'Total Operations': 'Origin Total Operations',
 }
 
+MERGED_DEST_AIRPORT_COLS_RENAME = {
+  'Total Operations': 'Destination Total Operations',
+}
+
+MERGED_ORIGIN_WEATHER_COLS_RENAME = {
+  'Precipitation': 'Origin Precipitation', 
+  'Rain': 'Origin Rain', 
+  'Snowfall': 'Origin Snowfall',
+  'Windspeed': 'Origin Windspeed', 
+  'Windgusts': 'Origin Windgusts',
+  'Evapotranspiration': 'Origin Evapotranspiration',
+  'Shortwave Radiation': 'Origin Shortwave Radiation',
+}
+
+MERGED_DEST_WEATHER_COLS_RENAME = {
+  'Precipitation': 'Destination Precipitation', 
+  'Rain': 'Destination Rain', 
+  'Snowfall': 'Destination Snowfall',
+  'Windspeed': 'Destination Windspeed', 
+  'Windgusts': 'Destination Windgusts',
+  'Evapotranspiration': 'Destination Evapotranspiration',
+  'Shortwave Radiation': 'Destination Shortwave Radiation',
+}
+
 EDA_WITHOUT_AIRLINE_COLS = [
+  'Distance', 'Departure Time',
   'Origin Total Operations',
   'Origin Precipitation', 'Origin Rain', 'Origin Snowfall', 
   'Origin Windspeed', 'Origin Windgusts', 'Origin Evapotranspiration',
   'Origin Shortwave Radiation',
+  'Destination Total Operations',
+  'Destination Precipitation', 'Destination Rain', 'Destination Snowfall', 
+  'Destination Windspeed', 'Destination Windgusts', 'Destination Evapotranspiration',
+  'Destination Shortwave Radiation',
 ]
 
 class bcolors:

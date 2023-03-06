@@ -28,6 +28,7 @@ def clean_airline_datasets(directory):
     filepath = os.path.join(directory, filename)
     df = pd.read_csv(filepath)
 
+    df['Flight Delay'] = df['ACTUAL_ELAPSED_TIME'] - df['CRS_ELAPSED_TIME']
     selected_df = df[constants.AIRLINE_COLS]
     selected_df.rename(columns=constants.AIRLINE_COLS_RENAME, inplace=True)
     selected_df['Carrier'].replace(constants.AIRLINES_RENAME, inplace=True)
@@ -72,7 +73,6 @@ def clean_airport_datasets(directory, year):
     airport_df = pd.read_csv(filepath)
     selected_year_airport_df = airport_df[airport_df['Year'] == int(year)]
     renamed_selected_df = selected_year_airport_df.rename(columns=constants.AIRPORT_COLS_RENAME)
-    # renamed_selected_df['Destination'] = renamed_selected_df['Origin']
 
     if show_sample:
       helpers.print_df_preview(renamed_selected_df, "Airport")
@@ -170,12 +170,17 @@ def eda(directory, year):
 
   airline_df = airline_df.merge(airport_df.set_index(['Year', 'Month', 'Origin']), on=['Year', 'Month', 'Origin'], how='left')
 
-  airline_df.rename(columns = constants.MERGED_AIRPORT_COLS_RENAME, inplace = True)
+  airline_df.rename(columns = constants.MERGED_ORIGIN_AIRPORT_COLS_RENAME, inplace = True)
+
+  airport_df.rename(columns = {'Origin': 'Destination'}, inplace = True)
+  airline_df = airline_df.merge(airport_df.set_index(['Year', 'Month', 'Destination']), on=['Year', 'Month', 'Destination'], how='left')
+
+  airline_df.rename(columns = constants.MERGED_DEST_AIRPORT_COLS_RENAME, inplace = True)
 
   helpers.print_df_preview(airline_df, "After merging Airport Data")
 
   for filename in os.listdir(CLEANED_WEATHER_FILEDIR):
-    if (counter % 20 == 0 and counter != 0):
+    if (counter % 10 == 0 and counter != 0):
       print(f"{constants.bcolors.OKGREEN}{counter} weather files merged")
 
     counter += 1
@@ -193,12 +198,23 @@ def eda(directory, year):
     airline_df = airline_df.merge(weather_df.set_index(['Date', 'Origin']), on=['Date', 'Origin'], how='left')
 
     if counter == 1:
-      airline_df.rename(columns = constants.MERGED_WEATHER_COLS_RENAME, inplace = True)
+      airline_df.rename(columns = constants.MERGED_ORIGIN_WEATHER_COLS_RENAME, inplace = True)
+
+      weather_df.rename(columns = {'Origin': 'Destination'}, inplace = True)
+      airline_df = airline_df.merge(weather_df.set_index(['Date', 'Destination']), on=['Date', 'Destination'], how='left')
+      airline_df.rename(columns = constants.MERGED_DEST_WEATHER_COLS_RENAME, inplace = True)
 
     else:
-      for k,v in constants.MERGED_WEATHER_COLS_RENAME.items():
+      for k,v in constants.MERGED_ORIGIN_WEATHER_COLS_RENAME.items():
         airline_df[v] = airline_df[v].fillna(airline_df[k])
         airline_df.drop(k, axis=1, inplace=True)
+
+      weather_df.rename(columns = {'Origin': 'Destination'}, inplace = True)
+      airline_df = airline_df.merge(weather_df.set_index(['Date', 'Destination']), on=['Date', 'Destination'], how='left')
+      for k,v in constants.MERGED_DEST_WEATHER_COLS_RENAME.items():
+        airline_df[v] = airline_df[v].fillna(airline_df[k])
+        airline_df.drop(k, axis=1, inplace=True)
+
 
   # perform standardization in Jupyter Notebook instead
   # scaler = StandardScaler()
