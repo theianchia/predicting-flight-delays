@@ -35,7 +35,7 @@ def clean_airline_datasets(directory):
 
     encoded_airlines_df = pd.get_dummies(selected_df['Carrier'])
 
-    selected_df.drop('Carrier', axis=1, inplace=True)
+    # selected_df.drop('Carrier', axis=1, inplace=True)
     selected_df.dropna(inplace=True)
     cleaned_df = pd.concat([selected_df, encoded_airlines_df], axis=1)
 
@@ -138,12 +138,57 @@ def clean_weather_datasets(directory, year):
   helpers.print_success_status_table(successfully_cleaned, unsuccessfully_cleaned)
 
 
+def clean_airplane_datasets(airplane_dir, carrier_dir):
+  if not os.path.exists(airplane_dir) or not os.path.exists(carrier_dir):
+    print("Directory does not exist!")
+    return
+
+  for a_filename in os.listdir(airplane_dir):
+
+    if not os.path.isfile(os.path.join(airplane_dir, a_filename)) or filename == '.DS_Store':
+      continue
+
+    airplane_filepath = os.path.join(airplane_dir, a_filename)
+    airplane_df = pd.read_csv(airplane_filepath)
+
+    for c_filename in os.listdir(carrier_dir):
+
+      if not os.path.isfile(os.path.join(carrier_dir, c_filename)) or filename == '.DS_Store':
+        continue
+
+      carrier_filepath = os.path.join(carrier_dir, c_filename)
+      carrier_df = pd.read_csv(carrier_filepath)
+
+      airplane_df.dropna(inplace=True)
+      carrier_df = carrier_df[carrier_df['ORIGIN'] != carrier_df['DEST']]
+      carrier_df.dropna(inplace=True)
+
+      selected_carrier_df = carrier_df[constants.CARRIER_FEATURES]
+      selected_airplane_df = airplane_df[constants.AIRPLANE_FEATURES]
+
+      selected_carrier_df.rename(columns=constants.CARRIER_COLS_RENAME, inplace=True)
+      selected_airplane_df.rename(columns=constants.AIRPLANE_COLS_RENAME, inplace=True)
+      selected_airplane_df = selected_carrier_df.merge(selected_airplane_df.set_index(['Airplane']), on=['Airplane'], how='left')
+      selected_airplane_df.dropna(inplace=True)
+
+      mode_airplane_df = selected_airplane_df.groupby(['Origin', 'Destination', 'Carrier']).agg(lambda x:x.value_counts().index[0]).reset_index()
+      helpers.print_df_preview(mode_airplane_df, "Airplane")
+
+      if not os.path.exists(constants.AIRPLANE_OUTPUT_DIR) or not os.path.isdir(constants.AIRPLANE_OUTPUT_DIR):
+        os.mkdir(constants.AIRPLANE_OUTPUT_DIR)
+
+      new_filename = f"{constants.AIRPLANE_OUTPUT_DIR}/cleaned_airplane.csv"
+      mode_airplane_df.to_csv(new_filename, index=False)
+      return
+
+
 def eda(directory, year):
   if not os.path.exists(directory):
     return "Directory does not exist!"
 
   CLEANED_AIRLINE_FILEPATH = f"{directory}/{constants.AIRLINE_OUTPUT_DIR}/cleaned_airline_cancel_data_{year}.csv"
   CLEANED_AIRPORT_FILEPATH = f"{directory}/{constants.AIRPORT_OUTPUT_DIR}/cleaned_airport_{year}.csv"
+  CLEANED_AIRPLANE_FILEPATH = f"{directory}/{constants.AIRPLANE_OUTPUT_DIR}/cleaned_airplane.csv"
   CLEANED_WEATHER_FILEDIR = f"{directory}/{constants.WEATHER_OUTPUT_DIR}"
 
   show_weather_sample = True
@@ -160,6 +205,17 @@ def eda(directory, year):
   airline_df = airline_df[airline_df['Date'] != 'nan']
   airline_df['Year'] = airline_df['Date'].apply(lambda x: int(str(x).split('-')[0]))
   airline_df['Month'] = airline_df['Date'].apply(lambda x: int(str(x).split('-')[1]))
+
+  if not os.path.isfile(CLEANED_AIRPLANE_FILEPATH):
+    print("Cleaned Airplane Dataset does not exist!")
+    return
+
+  airplane_df = pd.read_csv(CLEANED_AIRPLANE_FILEPATH)
+  helpers.print_df_preview(airport_df, "Airplane")
+
+  airline_df = airline_df.merge(airplane_df.set_index(['Origin', 'Destination', 'Carrier']), on=['Origin', 'Destination', 'Carrier'], how='left')
+  helpers.print_df_preview(airline_df, "After merging Airplane Data")
+
 
   if not os.path.isfile(CLEANED_AIRPORT_FILEPATH):
     print("Cleaned Airport Dataset does not exist!")
@@ -252,7 +308,7 @@ if __name__ == '__main__':
     get_dataset = [
       inquirer.List('dataset',
         message='Which dataset are you cleaning?',
-        choices=['Weather', 'Airline', 'Airport'],
+        choices=['Weather', 'Airline', 'Airport', 'Airplane'],
       ),
     ]
     dataset = inquirer.prompt(get_dataset)
@@ -279,3 +335,11 @@ if __name__ == '__main__':
       ]
       answers = inquirer.prompt(get_airport_data)
       clean_airport_datasets(answers['dir'], answers['year'])
+
+    elif dataset['dataset'] ==  'Airplane':
+      get_airport_data = [
+        inquirer.Text('airplane_dir', message="Relative file path to airplane dataset"),
+        inquirer.Text('carrier_dir', message="Relative file path to carrier dataset"),
+      ]
+      answers = inquirer.prompt(get_airport_data)
+      clean_airplane_datasets(answers['airplane_dir'], answers['carrier_dir'])

@@ -1,6 +1,7 @@
 WEATHER_OUTPUT_DIR = 'cleaned_weather'
 AIRLINE_OUTPUT_DIR = 'cleaned_airline'
 AIRPORT_OUTPUT_DIR = 'cleaned_airport'
+AIRPLANE_OUTPUT_DIR = 'cleaned_airplane'
 
 TABLE_HEADERS = ['Successful', 'Unsuccessful']
 
@@ -82,6 +83,25 @@ AIRPORT_COLS = [
   'Total Operations',
 ]
 
+CARRIER_FEATURES = ["ORIGIN", "DEST", "UNIQUE_CARRIER",  "AIRCRAFT_TYPE", "SEATS"]
+
+AIRPLANE_FEATURES = ["aircraft_type", "age"]
+
+CARRIER_COLS_RENAME = {
+    "ORIGIN": "Origin",
+    "DEST": "Destination",
+    "UNIQUE_CARRIER": "Carrier",
+    "YEAR": "Year",
+    "MONTH": "Month",
+    "AIRCRAFT_TYPE": "Airplane",
+    "SEATS": "Seats"
+}
+
+AIRPLANE_COLS_RENAME = {
+    "aircraft_type": "Airplane",
+    "age": "Airplane Age",
+}
+
 MERGED_ORIGIN_AIRPORT_COLS_RENAME = {
   'Total Operations': 'Origin Total Operations',
 }
@@ -111,6 +131,7 @@ MERGED_DEST_WEATHER_COLS_RENAME = {
 }
 
 EDA_WITHOUT_AIRLINE_COLS = [
+  'Seats',	'Airplane Age',
   'Distance', 'Departure Time',
   'Origin Total Operations',
   'Origin Precipitation', 'Origin Rain', 'Origin Snowfall', 
