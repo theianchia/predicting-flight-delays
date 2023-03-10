@@ -90,7 +90,7 @@ AIRPLANE_FEATURES = ["aircraft_type", "age"]
 CARRIER_COLS_RENAME = {
     "ORIGIN": "Origin",
     "DEST": "Destination",
-    "UNIQUE_CARRIER": "Carrier",
+    "UNIQUE_CARRIER": "Carrier Code",
     "YEAR": "Year",
     "MONTH": "Month",
     "AIRCRAFT_TYPE": "Airplane",

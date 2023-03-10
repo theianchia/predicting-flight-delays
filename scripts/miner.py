@@ -31,11 +31,12 @@ def clean_airline_datasets(directory):
     df['Flight Delay'] = df['ACTUAL_ELAPSED_TIME'] - df['CRS_ELAPSED_TIME']
     selected_df = df[constants.AIRLINE_COLS]
     selected_df.rename(columns=constants.AIRLINE_COLS_RENAME, inplace=True)
+    selected_df['Carrier Code'] = selected_df['Carrier'] 
     selected_df['Carrier'].replace(constants.AIRLINES_RENAME, inplace=True)
 
     encoded_airlines_df = pd.get_dummies(selected_df['Carrier'])
 
-    # selected_df.drop('Carrier', axis=1, inplace=True)
+    selected_df.drop('Carrier', axis=1, inplace=True)
     selected_df.dropna(inplace=True)
     cleaned_df = pd.concat([selected_df, encoded_airlines_df], axis=1)
 
@@ -140,12 +141,12 @@ def clean_weather_datasets(directory, year):
 
 def clean_airplane_datasets(airplane_dir, carrier_dir):
   if not os.path.exists(airplane_dir) or not os.path.exists(carrier_dir):
-    print("Directory does not exist!")
+    print("Airplane or Carrier Directory does not exist!")
     return
 
   for a_filename in os.listdir(airplane_dir):
 
-    if not os.path.isfile(os.path.join(airplane_dir, a_filename)) or filename == '.DS_Store':
+    if not os.path.isfile(os.path.join(airplane_dir, a_filename)) or a_filename == '.DS_Store':
       continue
 
     airplane_filepath = os.path.join(airplane_dir, a_filename)
@@ -153,7 +154,7 @@ def clean_airplane_datasets(airplane_dir, carrier_dir):
 
     for c_filename in os.listdir(carrier_dir):
 
-      if not os.path.isfile(os.path.join(carrier_dir, c_filename)) or filename == '.DS_Store':
+      if not os.path.isfile(os.path.join(carrier_dir, c_filename)) or c_filename == '.DS_Store':
         continue
 
       carrier_filepath = os.path.join(carrier_dir, c_filename)
@@ -171,7 +172,7 @@ def clean_airplane_datasets(airplane_dir, carrier_dir):
       selected_airplane_df = selected_carrier_df.merge(selected_airplane_df.set_index(['Airplane']), on=['Airplane'], how='left')
       selected_airplane_df.dropna(inplace=True)
 
-      mode_airplane_df = selected_airplane_df.groupby(['Origin', 'Destination', 'Carrier']).agg(lambda x:x.value_counts().index[0]).reset_index()
+      mode_airplane_df = selected_airplane_df.groupby(['Origin', 'Destination', 'Carrier Code']).agg(lambda x:x.value_counts().index[0]).reset_index()
       helpers.print_df_preview(mode_airplane_df, "Airplane")
 
       if not os.path.exists(constants.AIRPLANE_OUTPUT_DIR) or not os.path.isdir(constants.AIRPLANE_OUTPUT_DIR):
@@ -211,9 +212,9 @@ def eda(directory, year):
     return
 
   airplane_df = pd.read_csv(CLEANED_AIRPLANE_FILEPATH)
-  helpers.print_df_preview(airport_df, "Airplane")
+  helpers.print_df_preview(airplane_df, "Airplane")
 
-  airline_df = airline_df.merge(airplane_df.set_index(['Origin', 'Destination', 'Carrier']), on=['Origin', 'Destination', 'Carrier'], how='left')
+  airline_df = airline_df.merge(airplane_df.set_index(['Origin', 'Destination', 'Carrier Code']), on=['Origin', 'Destination', 'Carrier Code'], how='left')
   helpers.print_df_preview(airline_df, "After merging Airplane Data")
 
 
