@@ -31,25 +31,24 @@ def clean_airline_datasets(directory):
     df['Flight Delay'] = df['ACTUAL_ELAPSED_TIME'] - df['CRS_ELAPSED_TIME']
     selected_df = df[constants.AIRLINE_COLS]
     selected_df.rename(columns=constants.AIRLINE_COLS_RENAME, inplace=True)
-    selected_df['Carrier Code'] = selected_df['Carrier'] 
-    selected_df['Carrier'].replace(constants.AIRLINES_RENAME, inplace=True)
 
-    encoded_airlines_df = pd.get_dummies(selected_df['Carrier'])
+    # selected_df['Carrier Code'].replace(constants.AIRLINES_RENAME, inplace=True)
+    # encoded_airlines_df = pd.get_dummies(selected_df['Carrier Code'])
 
-    selected_df.drop('Carrier', axis=1, inplace=True)
     selected_df.dropna(inplace=True)
-    cleaned_df = pd.concat([selected_df, encoded_airlines_df], axis=1)
+    selected_df.reset_index(inplace=True, drop=True)
+    # cleaned_df = pd.concat([selected_df, encoded_airlines_df], axis=1)
 
     if show_sample:
-      helpers.print_df_preview(cleaned_df, "Airline")
+      helpers.print_df_preview(selected_df, "Airline")
       show_sample = False
 
     if not os.path.exists(constants.AIRLINE_OUTPUT_DIR) or not os.path.isdir(constants.AIRLINE_OUTPUT_DIR):
       os.mkdir(constants.AIRLINE_OUTPUT_DIR)
 
     new_filename = f"{constants.AIRLINE_OUTPUT_DIR}/cleaned_{filename}"
-    cleaned_df.to_csv(new_filename, index=False)
-    successfully_cleaned.insert(0,filename)
+    selected_df.to_csv(new_filename, index=False)
+    successfully_cleaned.insert(0, filename)
     unsuccessfully_cleaned.append('')
 
   helpers.print_success_status_table(successfully_cleaned, unsuccessfully_cleaned)
@@ -161,8 +160,10 @@ def clean_airplane_datasets(airplane_dir, carrier_dir):
       carrier_df = pd.read_csv(carrier_filepath)
 
       airplane_df.dropna(inplace=True)
+      airplane_df.reset_index(inplace=True, drop=True)
       carrier_df = carrier_df[carrier_df['ORIGIN'] != carrier_df['DEST']]
       carrier_df.dropna(inplace=True)
+      carrier_df.reset_index(inplace=True, drop=True)
 
       selected_carrier_df = carrier_df[constants.CARRIER_FEATURES]
       selected_airplane_df = airplane_df[constants.AIRPLANE_FEATURES]
@@ -171,6 +172,7 @@ def clean_airplane_datasets(airplane_dir, carrier_dir):
       selected_airplane_df.rename(columns=constants.AIRPLANE_COLS_RENAME, inplace=True)
       selected_airplane_df = selected_carrier_df.merge(selected_airplane_df.set_index(['Airplane']), on=['Airplane'], how='left')
       selected_airplane_df.dropna(inplace=True)
+      selected_airplane_df.reset_index(inplace=True, drop=True)
 
       mode_airplane_df = selected_airplane_df.groupby(['Origin', 'Destination', 'Carrier Code']).agg(lambda x:x.value_counts().index[0]).reset_index()
       helpers.print_df_preview(mode_airplane_df, "Airplane")
@@ -280,6 +282,9 @@ def eda(directory, year):
   # scaled_features_df = pd.DataFrame(scaled_features_np , columns=WITHOUT_AIRLINE_COLS)
   # scaled_features_df['Delay'] = airline_df['Delay']
   # scaled_features_df[list(AIRLINES_MAP.values())] = airline_df[list(AIRLINES_MAP.values())]
+
+  airline_df.dropna(inplace=True)
+  airline_df.reset_index(inplace=True, drop=True)
 
   helpers.print_df_preview(airline_df[constants.EDA_WITHOUT_AIRLINE_COLS], "EDA Features w/o Airlines")
 

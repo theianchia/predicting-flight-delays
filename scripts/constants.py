@@ -21,7 +21,7 @@ AIRLINE_COLS_RENAME = {
   'FL_DATE': 'Date',
   'ORIGIN': 'Origin',
   'DEST': 'Destination',
-  'OP_CARRIER': 'Carrier',
+  'OP_CARRIER': 'Carrier Code',
   'OP_CARRIER_FL_NUM': 'Flight Num',
   'CRS_DEP_TIME': 'Departure Time',
   'DISTANCE': 'Distance',
