@@ -14,7 +14,13 @@ AIRLINE_COLS = [
   'DEST',
   'DISTANCE',
   'DEP_DELAY',
+  'CARRIER_DELAY',
+  'WEATHER_DELAY',
+  'NAS_DELAY',
+  'SECURITY_DELAY',
+  'LATE_AIRCRAFT_DELAY',
   'Flight Delay'
+
 ]
 
 AIRLINE_COLS_RENAME = {
@@ -25,7 +31,12 @@ AIRLINE_COLS_RENAME = {
   'OP_CARRIER_FL_NUM': 'Flight Num',
   'CRS_DEP_TIME': 'Departure Time',
   'DISTANCE': 'Distance',
-  'DEP_DELAY': 'Departure Delay'
+  'DEP_DELAY': 'Departure Delay',
+  'CARRIER_DELAY': 'Carrier Delay',
+  'WEATHER_DELAY': 'Weather Delay',
+  'NAS_DELAY': 'NAS Delay',
+  'SECURITY_DELAY': 'Security Delay',
+  'LATE_AIRCRAFT_DELAY': 'Late Aircraft Delay'
 }
 
 AIRLINES_RENAME = {
