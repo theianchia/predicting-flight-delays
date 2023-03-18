@@ -2,6 +2,7 @@ WEATHER_OUTPUT_DIR = 'cleaned_weather'
 AIRLINE_OUTPUT_DIR = 'cleaned_airline'
 AIRPORT_OUTPUT_DIR = 'cleaned_airport'
 AIRPLANE_OUTPUT_DIR = 'cleaned_airplane'
+HOLIDAYS_OUTPUT_DIR = 'cleaned_holidays'
 
 TABLE_HEADERS = ['Successful', 'Unsuccessful']
 
@@ -164,8 +165,10 @@ MERGED_DEST_WEATHER_COLS_RENAME = {
 }
 
 EDA_WITHOUT_AIRLINE_COLS = [
+  'Carrier Code',
   'Seats',	'Airplane Age',
   'Distance', 'Departure Time',
+  'Is Holiday',
   'Origin Total Operations',
   'Origin Precipitation', 'Origin Rain', 'Origin Snowfall', 
   'Origin Windspeed', 'Origin Windgusts', 'Origin Evapotranspiration',

@@ -26,6 +26,7 @@
 
 
 ## About The Project
+
 This project aims to uncover the underlying relationship with extrinsic factors that may exist between flight delays. Flight delay here is defined as the difference between the planned flight time and actual elapsed time. In the project we narrowed to several specific factors, namely:
 * `Airline` specific features such as reliability of airline
 * `Airport` specific features such as airport traffic
@@ -35,7 +36,7 @@ This project aims to uncover the underlying relationship with extrinsic factors 
 Refer <a href="#datasets">here</a> for a detailed breakdown of features from datasets and links to the dataset
 
 ### Motivations
-
+Airline companies took the hardest hit during the pandemic due to travel bans and restrictions. As the pandemic eases into the new normal, reopening borders and relaxed travel restrictions is leading air travel back to pre pandemic levels. Given the sudden recovery and demand in travel, how can we help airlines better mitigate the negative impacts of flight delays so as to serve their customers better.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -60,6 +61,8 @@ Refer <a href="#datasets">here</a> for a detailed breakdown of features from dat
             └── *.csv
         ├── carrier
             └── *.csv
+        ├── holidays
+            └── *.csv
         └── weather
             └── *.csv
 └── scripts
@@ -69,6 +72,8 @@ Refer <a href="#datasets">here</a> for a detailed breakdown of features from dat
         ├── cleaned_airplane
             └── *.csv
         ├── cleaned_airport
+            └── *.csv
+        ├── cleaned_holidays
             └── *.csv
         └── cleaned_weather
             └── *.csv

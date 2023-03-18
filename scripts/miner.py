@@ -184,6 +184,30 @@ def clean_airplane_datasets(airplane_dir, carrier_dir):
       return
 
 
+def clean_holidays_datasets(directory, year):
+  if not os.path.exists(directory):
+    print("Directory does not exist!")
+    return
+
+  for filename in os.listdir(directory):
+
+    if not os.path.isfile(os.path.join(directory, filename)) or filename == '.DS_Store':
+      continue
+
+    filepath = os.path.join(directory, filename)
+
+    holidays_df = pd.read_csv(filepath)
+    holidays_df = holidays_df[holidays_df['Year'] == year][['Date', 'Holiday']].reset_index(drop=True)
+    holidays_df.rename(columns = {'Holiday': 'Is Holiday'}, inplace = True)
+    helpers.print_df_preview(holidays_df, "Holidays")
+
+    if not os.path.exists(constants.HOLIDAYS_OUTPUT_DIR) or not os.path.isdir(constants.HOLIDAYS_OUTPUT_DIR):
+      os.mkdir(constants.HOLIDAYS_OUTPUT_DIR)
+
+    new_filename = f"{constants.HOLIDAYS_OUTPUT_DIR}/cleaned_holidays_{year}.csv"
+    holidays_df.to_csv(new_filename, index=False)
+
+
 def eda(directory, year):
   if not os.path.exists(directory):
     return "Directory does not exist!"
@@ -192,6 +216,7 @@ def eda(directory, year):
   CLEANED_AIRPORT_FILEPATH = f"{directory}/{constants.AIRPORT_OUTPUT_DIR}/cleaned_airport_{year}.csv"
   CLEANED_AIRPLANE_FILEPATH = f"{directory}/{constants.AIRPLANE_OUTPUT_DIR}/cleaned_airplane.csv"
   CLEANED_WEATHER_FILEDIR = f"{directory}/{constants.WEATHER_OUTPUT_DIR}"
+  CLEANED_HOLIDAYS_FILEPATH = f"{directory}/{constants.HOLIDAYS_OUTPUT_DIR}/cleaned_holidays_{year}.csv"
 
   show_weather_sample = True
   counter = 0
@@ -236,6 +261,18 @@ def eda(directory, year):
   airline_df.rename(columns = constants.MERGED_DEST_AIRPORT_COLS_RENAME, inplace = True)
 
   helpers.print_df_preview(airline_df, "After merging Airport Data")
+
+
+  if not os.path.isfile(CLEANED_HOLIDAYS_FILEPATH):
+    print("Cleaned Airport Dataset does not exist!")
+    return
+
+  holidays_df = pd.read_csv(CLEANED_HOLIDAYS_FILEPATH)
+  helpers.print_df_preview(holidays_df, "Holidays")
+  airline_df = airline_df.merge(holidays_df.set_index(['Date']), on=['Date'], how='left')
+
+  helpers.print_df_preview(airline_df, "After merging Holidays Data")
+
 
   for filename in os.listdir(CLEANED_WEATHER_FILEDIR):
     if (counter % 10 == 0 and counter != 0):
@@ -315,7 +352,7 @@ if __name__ == '__main__':
     get_dataset = [
       inquirer.List('dataset',
         message='Which dataset are you cleaning?',
-        choices=['Weather', 'Airline', 'Airport', 'Airplane'],
+        choices=['Weather', 'Airline', 'Airport', 'Airplane', 'Holidays'],
       ),
     ]
     dataset = inquirer.prompt(get_dataset)
@@ -350,3 +387,11 @@ if __name__ == '__main__':
       ]
       answers = inquirer.prompt(get_airport_data)
       clean_airplane_datasets(answers['airplane_dir'], answers['carrier_dir'])
+
+    elif dataset['dataset'] ==  'Holidays':
+      get_holidays_data = [
+        inquirer.Text('airplane_dir', message="Relative file path to holidays dataset"),
+        inquirer.Text('carrier_dir', message="Year of holidays dataset"),
+      ]
+      answers = inquirer.prompt(get_holidays_data)
+      clean_holidays_datasets(answers['airplane_dir'], answers['carrier_dir'])
