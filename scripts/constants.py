@@ -78,6 +78,7 @@ WEATHER_COLS_RENAME = {
   'shortwave_radiation_sum (MJ/m²)': 'Shortwave Radiation',
   'windspeed_10m_max (km/h)': 'Windspeed',
   'windgusts_10m_max (km/h)': 'Windgusts',
+  'winddirection_10m_dominant (°)': 'Wind Direction',
   'et0_fao_evapotranspiration (mm)': 'Evapotranspiration',
 }
 
@@ -136,6 +137,7 @@ MERGED_ORIGIN_WEATHER_COLS_RENAME = {
   'Snowfall': 'Origin Snowfall',
   'Windspeed': 'Origin Windspeed', 
   'Windgusts': 'Origin Windgusts',
+  'Wind Direction': 'Origin Wind Direction',
   'Evapotranspiration': 'Origin Evapotranspiration',
   'Shortwave Radiation': 'Origin Shortwave Radiation',
 }
@@ -156,6 +158,7 @@ MERGED_DEST_WEATHER_COLS_RENAME = {
   'Snowfall': 'Destination Snowfall',
   'Windspeed': 'Destination Windspeed', 
   'Windgusts': 'Destination Windgusts',
+  'Wind Direction': 'Destination Wind Direction',
   'Evapotranspiration': 'Destination Evapotranspiration',
   'Shortwave Radiation': 'Destination Shortwave Radiation',
 }
@@ -170,7 +173,7 @@ EDA_WITHOUT_AIRLINE_COLS = [
   'Origin Weather Code', 'Origin Temperature Max', 'Origin Temperature Min',
   'Origin Temperature Mean', 'Origin Apparent Temperature Max', 'Origin Apparent Temperature Min',
   'Origin Apparent Temperature Mean', 'Origin Sunrise', 'Origin Sunset',
-  'Origin Precipitation Hours',
+  'Origin Precipitation Hours', 'Origin Wind Direction',
   'Destination Total Operations',
   'Destination Precipitation', 'Destination Rain', 'Destination Snowfall', 
   'Destination Windspeed', 'Destination Windgusts', 'Destination Evapotranspiration',
@@ -178,7 +181,7 @@ EDA_WITHOUT_AIRLINE_COLS = [
   'Destination Weather Code', 'Destination Temperature Max', 'Destination Temperature Min',
   'Destination Temperature Mean', 'Destination Apparent Temperature Max', 'Destination Apparent Temperature Min',
   'Destination Apparent Temperature Mean', 'Destination Sunrise', 'Destination Sunset',
-  'Destination Precipitation Hours',
+  'Destination Precipitation Hours', 'Destination Wind Direction',
 ]
 
 class bcolors:
