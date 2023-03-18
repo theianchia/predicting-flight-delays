@@ -119,19 +119,18 @@ def clean_weather_datasets(directory, year):
       continue
 
     df = df[df['time'].dt.year == int(year)]
-    selected_df = df[constants.WEATHER_COLS]
-    selected_df['Origin'] = filename.split('.')[0]
-    renamed_selected_df = selected_df.rename(columns=constants.WEATHER_COLS_RENAME)
+    df['Origin'] = filename.split('.')[0]
+    renamed_df = df.rename(columns=constants.WEATHER_COLS_RENAME)
 
     if show_sample:
-      helpers.print_df_preview(renamed_selected_df, "Weather")
+      helpers.print_df_preview(renamed_df, "Weather")
       show_sample = False
 
     if not os.path.exists(constants.WEATHER_OUTPUT_DIR) or not os.path.isdir(constants.WEATHER_OUTPUT_DIR):
       os.mkdir(constants.WEATHER_OUTPUT_DIR)
 
     new_filename = f"{constants.WEATHER_OUTPUT_DIR}/cleaned_{year}_{filename}"
-    renamed_selected_df.to_csv(new_filename, index=False)
+    renamed_df.to_csv(new_filename, index=False)
     successfully_cleaned.insert(0,filename)
     unsuccessfully_cleaned.append('')
 

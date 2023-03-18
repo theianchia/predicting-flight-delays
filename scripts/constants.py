@@ -60,26 +60,25 @@ AIRLINES_RENAME = {
   'DL':'Delta Airlines'
 }
 
-WEATHER_COLS = [
-  'time',
-  'precipitation_sum (mm)',
-  'rain_sum (mm)',
-  'snowfall_sum (cm)',
-  'windspeed_10m_max (km/h)',
-  'windgusts_10m_max (km/h)',
-  'et0_fao_evapotranspiration (mm)',
-  'shortwave_radiation_sum (MJ/m²)',
-]
-
 WEATHER_COLS_RENAME = {
   'time': 'Date',
+  'weathercode (wmo code)': 'Weather Code',
+  'temperature_2m_max (°C)': 'Temperature Max',
+  'temperature_2m_min (°C)': 'Temperature Min',
+  'temperature_2m_mean (°C)': 'Temperature Mean',
+  'apparent_temperature_max (°C)': 'Apparent Temperature Max',
+  'apparent_temperature_min (°C)': 'Apparent Temperature Min',
+  'apparent_temperature_mean (°C)': 'Apparent Temperature Mean',
+  'sunrise (iso8601)': 'Sunrise',
+  'sunset (iso8601)': 'Sunset',
   'precipitation_sum (mm)': 'Precipitation',
   'rain_sum (mm)': 'Rain',
   'snowfall_sum (cm)': 'Snowfall',
+  'precipitation_hours (h)': 'Precipitation Hours',
+  'shortwave_radiation_sum (MJ/m²)': 'Shortwave Radiation',
   'windspeed_10m_max (km/h)': 'Windspeed',
   'windgusts_10m_max (km/h)': 'Windgusts',
   'et0_fao_evapotranspiration (mm)': 'Evapotranspiration',
-  'shortwave_radiation_sum (MJ/m²)': 'Shortwave Radiation',
 }
 
 AIRPORT_COLS_RENAME = {
@@ -122,6 +121,16 @@ MERGED_DEST_AIRPORT_COLS_RENAME = {
 }
 
 MERGED_ORIGIN_WEATHER_COLS_RENAME = {
+  'Weather Code': 'Origin Weather Code',
+  'Temperature Max': 'Origin Temperature Max',
+  'Temperature Min': 'Origin Temperature Min',
+  'Temperature Mean': 'Origin Temperature Mean',
+  'Apparent Temperature Max': 'Origin Apparent Temperature Max',
+  'Apparent Temperature Min': 'Origin Apparent Temperature Min',
+  'Apparent Temperature Mean': 'Origin Apparent Temperature Mean',
+  'Sunrise': 'Origin Sunrise',
+  'Sunset': 'Origin Sunset',
+  'Precipitation Hours': 'Origin Precipitation Hours',
   'Precipitation': 'Origin Precipitation', 
   'Rain': 'Origin Rain', 
   'Snowfall': 'Origin Snowfall',
@@ -132,6 +141,16 @@ MERGED_ORIGIN_WEATHER_COLS_RENAME = {
 }
 
 MERGED_DEST_WEATHER_COLS_RENAME = {
+  'Weather Code': 'Destination Weather Code',
+  'Temperature Max': 'Destination Temperature Max',
+  'Temperature Min': 'Destination Temperature Min',
+  'Temperature Mean': 'Destination Temperature Mean',
+  'Apparent Temperature Max': 'Destination Apparent Temperature Max',
+  'Apparent Temperature Min': 'Destination Apparent Temperature Min',
+  'Apparent Temperature Mean': 'Destination Apparent Temperature Mean',
+  'Sunrise': 'Destination Sunrise',
+  'Sunset': 'Destination Sunset',
+  'Precipitation Hours': 'Destination Precipitation Hours',
   'Precipitation': 'Destination Precipitation', 
   'Rain': 'Destination Rain', 
   'Snowfall': 'Destination Snowfall',
@@ -148,10 +167,18 @@ EDA_WITHOUT_AIRLINE_COLS = [
   'Origin Precipitation', 'Origin Rain', 'Origin Snowfall', 
   'Origin Windspeed', 'Origin Windgusts', 'Origin Evapotranspiration',
   'Origin Shortwave Radiation',
+  'Origin Weather Code', 'Origin Temperature Max', 'Origin Temperature Min',
+  'Origin Temperature Mean', 'Origin Apparent Temperature Max', 'Origin Apparent Temperature Min',
+  'Origin Apparent Temperature Mean', 'Origin Sunrise', 'Origin Sunset',
+  'Origin Precipitation Hours',
   'Destination Total Operations',
   'Destination Precipitation', 'Destination Rain', 'Destination Snowfall', 
   'Destination Windspeed', 'Destination Windgusts', 'Destination Evapotranspiration',
   'Destination Shortwave Radiation',
+  'Destination Weather Code', 'Destination Temperature Max', 'Destination Temperature Min',
+  'Destination Temperature Mean', 'Destination Apparent Temperature Max', 'Destination Apparent Temperature Min',
+  'Destination Apparent Temperature Mean', 'Destination Sunrise', 'Destination Sunset',
+  'Destination Precipitation Hours',
 ]
 
 class bcolors:
