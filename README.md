@@ -16,43 +16,104 @@
 <details>
   <summary>Table of Contents</summary>
   <ol>
-    <li>
-      <a href="#about-the-project">About The Project</a>
-      <ul>
-        <li><a href="#built-with">Built With</a></li>
-      </ul>
-    </li>
-    <li>
-      <a href="#getting-started">Getting Started</a>
-      <ul>
-        <li><a href="#prerequisites">Prerequisites</a></li>
-        <li><a href="#installation">Installation</a></li>
-      </ul>
-    </li>
-    <li><a href="#usage">Usage</a></li>
-    <li><a href="#roadmap">Roadmap</a></li>
-    <li><a href="#contributing">Contributing</a></li>
-    <li><a href="#license">License</a></li>
-    <li><a href="#contact">Contact</a></li>
-    <li><a href="#acknowledgments">Acknowledgments</a></li>
+    <li><a href="#about-the-project">About The Project</a></li>
+    <li><a href="#findings">Findings</a></li>
+    <li><a href="#eda">EDA</a></li>
+    <li><a href="#models">Models</a></li>
+    <li><a href="#datasets">Datasets</a></li>
   </ol>
 </details>
 
 
 ## About The Project
+This project aims to uncover the underlying relationship with extrinsic factors that may exist between flight delays. Flight delay here is defined as the difference between the planned flight time and actual elapsed time. In the project we narrowed to several specific factors, namely:
+* `Airline` specific features such as reliability of airline
+* `Airport` specific features such as airport traffic
+* `Airplane` specific features such as airplane age
+* `Weather` specific features such as precipitation, rainfall etc
+
+Refer <a href="#datasets">here</a> for a detailed breakdown of features from datasets and links to the dataset
+
+### Motivations
 
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 
+## Findings
+
+
 ## Data Preprocessing
+
+### Recommended Project Directory Setup
+* As files are read using their relative paths, ensure you are following this project setup for smooth use
+```
+├── eda
+├── models
+├── preprocessing
+    └── datasets
+        ├── airline
+            └── *.csv
+        ├── airplane
+            └── *.csv
+        ├── airport
+            └── *.csv
+        ├── carrier
+            └── *.csv
+        └── weather
+            └── *.csv
+└── scripts
+    ├── cleaned
+        ├── cleaned_airline
+            └── *.csv
+        ├── cleaned_airplane
+            └── *.csv
+        ├── cleaned_airport
+            └── *.csv
+        └── cleaned_weather
+            └── *.csv
+    ├── constants.py
+    ├── helpers.py
+    └── miner.py
+```
+
+* `eda/` contains the eda steps and uses the `eda_{year}.csv` dataset in `scripts/` created at the end of merging the various datasets
+* `models/` contains the modelling steps and uses the `model_{year}.csv` dataset in `eda/` created at the end of EDA
+* `preprocessing/` contains the specific preprocessing steps taken for each type of dataset
+* `scripts/` contains the script used to automate the preprocessing steps taken for each type of dataset and apply it to the hundreds of datasets used, and subsequent joining of these cleaned datasets over an approximate 7 million rows for use in EDA
 
 ### Using the CLI
 * Install dependencies `requirements.txt` into python environment
 * Run `python miner.py` to interact with CLI
 
-### Columns
-* Initial columns from raw airlines dataset
+
+## EDA
+<img src='images/dep_delay.png' height=300>
+
+> Histogram plot of Departure Delay values
+
+<img src='images/flight_delay.png' height=300>
+
+> Histogram plot of Flight Delay values
+
+
+### Class Imbalance
+2 approaches were used to tackle the inherent class imbalance that exist within the dataset
+1. Equal Size Binning of Classes
+2. SMOTE
+
+## Models
+The following models were used for `multi-class classification`
+* Logistic Regression
+* Random Forest Classifier
+* XGBoost
+* CatBoost
+* Neural Networks
+
+### Performance
+
+## Datasets
+* Raw airlines dataset
 
 `FL_DATE` = Date of the Flight<br>
 `OP_CARRIER` = Airline Identifier<br>
@@ -82,12 +143,6 @@
 `SECURITY_DELAY` = caused by security reasons<br>
 `LATE_AIRCRAFT_DELAY` = Delay caused by security<br>
 
-* Initial columns from raw weather dataset
-
-<p align="right">(<a href="#top">back to top</a>)</p>
-
-
-## EDA
-
+* Raw weather dataset
 
 <p align="right">(<a href="#top">back to top</a>)</p>

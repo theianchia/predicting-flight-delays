@@ -99,18 +99,18 @@ CARRIER_FEATURES = ["ORIGIN", "DEST", "UNIQUE_CARRIER",  "AIRCRAFT_TYPE", "SEATS
 AIRPLANE_FEATURES = ["aircraft_type", "age"]
 
 CARRIER_COLS_RENAME = {
-    "ORIGIN": "Origin",
-    "DEST": "Destination",
-    "UNIQUE_CARRIER": "Carrier Code",
-    "YEAR": "Year",
-    "MONTH": "Month",
-    "AIRCRAFT_TYPE": "Airplane",
-    "SEATS": "Seats"
+  "ORIGIN": "Origin",
+  "DEST": "Destination",
+  "UNIQUE_CARRIER": "Carrier Code",
+  "YEAR": "Year",
+  "MONTH": "Month",
+  "AIRCRAFT_TYPE": "Airplane",
+  "SEATS": "Seats"
 }
 
 AIRPLANE_COLS_RENAME = {
-    "aircraft_type": "Airplane",
-    "age": "Airplane Age",
+  "aircraft_type": "Airplane",
+  "age": "Airplane Age",
 }
 
 MERGED_ORIGIN_AIRPORT_COLS_RENAME = {
