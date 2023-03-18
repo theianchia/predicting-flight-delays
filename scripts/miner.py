@@ -34,7 +34,7 @@ def clean_airline_datasets(directory):
 
     # selected_df['Carrier Code'].replace(constants.AIRLINES_RENAME, inplace=True)
     # encoded_airlines_df = pd.get_dummies(selected_df['Carrier Code'])
-
+    selected_df[['Carrier Delay', 'Weather Delay', 'NAS Delay', 'Security Delay', 'Late Aircraft Delay']] = selected_df[['Carrier Delay', 'Weather Delay', 'NAS Delay', 'Security Delay', 'Late Aircraft Delay']].fillna(0)
     selected_df.dropna(inplace=True)
     selected_df.reset_index(inplace=True, drop=True)
     # cleaned_df = pd.concat([selected_df, encoded_airlines_df], axis=1)
@@ -282,6 +282,8 @@ def eda(directory, year):
   # scaled_features_df = pd.DataFrame(scaled_features_np , columns=WITHOUT_AIRLINE_COLS)
   # scaled_features_df['Delay'] = airline_df['Delay']
   # scaled_features_df[list(AIRLINES_MAP.values())] = airline_df[list(AIRLINES_MAP.values())]
+
+  airline_df['Carrier Code'].replace(constants.AIRLINES_RENAME, inplace=True)
 
   airline_df.dropna(inplace=True)
   airline_df.reset_index(inplace=True, drop=True)
