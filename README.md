@@ -66,6 +66,9 @@ Airline companies took the hardest hit during the pandemic due to travel bans an
         └── weather
             └── *.csv
 └── scripts
+    ├── airline.py
+    ├── airplane.py
+    ├── airport.py
     ├── cleaned
         ├── cleaned_airline
             └── *.csv
@@ -79,7 +82,10 @@ Airline companies took the hardest hit during the pandemic due to travel bans an
             └── *.csv
     ├── constants.py
     ├── helpers.py
-    └── miner.py
+    ├── holidays.py
+    ├── merge.py
+    ├── miner.py
+    └── weather.py
 ```
 
 * `eda/` contains the eda steps and uses the `eda_{year}.csv` dataset in `scripts/` created at the end of merging the various datasets
@@ -149,5 +155,18 @@ The following models were used for `multi-class classification`
 `LATE_AIRCRAFT_DELAY` = Delay caused by security<br>
 
 * Raw weather dataset
+
+`weathercode` = The most severe weather condition on a given day (WMO code)<br>
+`temperature_2m_max/min` = Maximum and minimum daily air temperature at 2 meters above ground (°C (°F))<br>
+`apparent_temperature_max/min` = Maximum and minimum daily apparent temperature (°C (°F))<br>
+`precipitation sum` = Sum of daily precipitation including rain, showers and snowfall (mm)<br>
+`rain_sum` = Sum of daily rain (mm)<br>
+`snowfall_sum` = Sum of daily snowfall (cm)<br>
+`precipitation_hours` = The number of hours with rain (hours)<br>
+`sunrise/set` = Sun rise and set times (iso8601)<br>
+`windspeed_10m_max/windgusts_10m_max` = Maximum wind speed and gusts on a day (km/h)<br>
+`winddirection_10m_dominant` = Dominant wind direction (°)<br>
+`shortwave_radiation_sum` = The sum of solar radiation on a given day in Megajoules (MJ/m²)
+`et0_fao_evapotranspiration` = Daily sum of ET₀ Reference Evapotranspiration of a well watered grass field (mm)<br> 
 
 <p align="right">(<a href="#top">back to top</a>)</p>
