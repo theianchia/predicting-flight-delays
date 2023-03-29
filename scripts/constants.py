@@ -99,6 +99,8 @@ CARRIER_FEATURES = ["ORIGIN", "DEST", "UNIQUE_CARRIER",  "AIRCRAFT_TYPE", "SEATS
 
 AIRPLANE_FEATURES = ["aircraft_type", "age"]
 
+HOLIDAY_COLS = ['Date', 'Holiday', 'WeekDay']
+
 CARRIER_COLS_RENAME = {
   "ORIGIN": "Origin",
   "DEST": "Destination",
@@ -168,7 +170,7 @@ EDA_WITHOUT_AIRLINE_COLS = [
   'Carrier Code',
   'Seats',	'Airplane Age',
   'Distance', 'Departure Time',
-  'Is Holiday',
+  'Holiday', 'Day of Holiday',
   'Origin Total Operations',
   'Origin Precipitation', 'Origin Rain', 'Origin Snowfall', 
   'Origin Windspeed', 'Origin Windgusts', 'Origin Evapotranspiration',

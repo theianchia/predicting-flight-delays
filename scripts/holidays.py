@@ -20,8 +20,8 @@ def clean_holidays_datasets(directory, year):
     filepath = os.path.join(directory, filename)
 
     holidays_df = pd.read_csv(filepath)
-    holidays_df = holidays_df[holidays_df['Year'] == year][['Date', 'Holiday']].reset_index(drop=True)
-    holidays_df.rename(columns = {'Holiday': 'Is Holiday'}, inplace = True)
+    holidays_df = holidays_df[holidays_df['Year'] == int(year)][constants.HOLIDAY_COLS].reset_index(drop=True)
+    holidays_df.rename(columns = {'WeekDay': 'Day of Holiday'}, inplace = True)
     helpers.print_df_preview(holidays_df, "Holidays")
 
     if not os.path.exists(constants.HOLIDAYS_OUTPUT_DIR) or not os.path.isdir(constants.HOLIDAYS_OUTPUT_DIR):
