@@ -4,7 +4,6 @@ import os
 
 import pandas as pd
 import numpy as np
-# from sklearn.preprocessing import StandardScaler
 
 import constants, helpers
 
@@ -113,20 +112,14 @@ def merge_datasets(directory, year):
         airline_df[v] = airline_df[v].fillna(airline_df[k])
         airline_df.drop(k, axis=1, inplace=True)
 
-
-  # perform standardization in Jupyter Notebook instead
-  # scaler = StandardScaler()
-  # features_df = airline_df[WITHOUT_AIRLINE_COLS]
-  # scaled_features_np = scaler.fit_transform(features_df)
-  # scaled_features_df = pd.DataFrame(scaled_features_np , columns=WITHOUT_AIRLINE_COLS)
-  # scaled_features_df['Delay'] = airline_df['Delay']
-  # scaled_features_df[list(AIRLINES_MAP.values())] = airline_df[list(AIRLINES_MAP.values())]
-
   airline_df['Carrier Code'].replace(constants.AIRLINES_RENAME, inplace=True)
 
-  airline_df.dropna(inplace=True)
-  airline_df.reset_index(inplace=True, drop=True)
+  airline_df.reset_index(inplace=True)
 
   helpers.print_df_preview(airline_df[constants.EDA_WITHOUT_AIRLINE_COLS], "EDA Features w/o Airlines")
+
+  print()
+  print(airline_df.shape)
+  print()
 
   airline_df.to_csv(f"eda_{year}.csv", index=False)
