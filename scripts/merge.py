@@ -72,6 +72,8 @@ def merge_datasets(directory, year):
   holidays_df = pd.read_csv(CLEANED_HOLIDAYS_FILEPATH)
   helpers.print_df_preview(holidays_df, "Holidays")
   airline_df = airline_df.merge(holidays_df.set_index(['Date']), on=['Date'], how='left')
+  airline_df['Holiday'].fillna('', inplace=True)
+  airline_df['Day of Holiday'].fillna('', inplace=True)
 
   helpers.print_df_preview(airline_df, "After merging Holidays Data")
 
@@ -113,8 +115,6 @@ def merge_datasets(directory, year):
         airline_df.drop(k, axis=1, inplace=True)
 
   airline_df['Carrier Code'].replace(constants.AIRLINES_RENAME, inplace=True)
-
-  airline_df.reset_index(inplace=True)
 
   helpers.print_df_preview(airline_df[constants.EDA_WITHOUT_AIRLINE_COLS], "EDA Features w/o Airlines")
 
