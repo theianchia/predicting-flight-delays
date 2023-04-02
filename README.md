@@ -42,7 +42,9 @@ Airline companies took the hardest hit during the pandemic due to travel bans an
 
 
 ## Findings
-
+1. `Delta Airlines` is the best airline in terms of reliability as it has operates a high number of flights and has a lower than average of departure delay against the industry
+2. `Frontier Airlines` is the worst airline and has the highest delay amongst all the airlines. This could be probably due to the airlines small size, leading to lack of economies of scale, and its operation amongst smaller and inefficient airports
+3. `Monthly Median Departure Delay`, `Origin Precipitation` and `Weather Code Intensity` were the top 3 most useful features in predicting departure delays.
 
 ## Data Preprocessing
 
@@ -99,19 +101,61 @@ Airline companies took the hardest hit during the pandemic due to travel bans an
 
 
 ## EDA
-<img src='images/dep_delay.png' height=300>
 
-> Histogram plot of Departure Delay values
+### Airline rankings in terms of their reliability 
+* Delta Airlines which is one of the biggest or most active airline has one of the lowest mean delay
 
-<img src='images/flight_delay.png' height=300>
+<img src="images/airline_size.png" height=200>
 
-> Histogram plot of Flight Delay values
+> Relative count of flights made by each airline
 
+<img src="images/mean_airline_delay.png" height=200>
+
+> Mean delay of each airline compared with the industry mean
+
+<img src="images/proportion_delay_airline.png" height=200>
+
+> Breakdown of type of delays by proportion for the top 5 most active airlines
+
+
+### Weather trends and Departure Delay
+* No improvements after performing smoothing using 3 day rolling average
+* Slight improvment when predicting monthly and weekly trends
+
+<img src="images/weather_corr.png" height=200>
+
+> Before and after smoothing of weather features correlation matrix values
+
+<img src="images/monthly_weather_corr.png" height=200>
+
+> Correlation Matrix Heatmap of Monthly Macro Weather Features
+
+<img src="images/weekly_weather_corr.png" height=200>
+
+> Correlation Matrix Heatmap of Weekly Macro Weather Features
+
+### Impact of holidays on Departue Delays
+* Thanksgiving and X'mas has the lowest mean delay
+
+<img src="images/mean_delay_holidays.png" height=200>
+
+> Mean delay on each US holiday compared with total flights on that day
+
+### Airport busy-ness and Departure Delays
+* Smaller or less active airports seem to be less efficient as compared to bigger or busier ones
+
+<img src="images/mean_delay_airport.png" height=200>
+
+> Mean delay for each airport compared with total flights in and out of that airport
 
 ### Class Imbalance
 2 approaches were used to tackle the inherent class imbalance that exist within the dataset
 1. Equal Size Binning of Classes
+   * predefine number of bins only
+   * sorts and equally split rows across the specified number of bins such that each bin has an equal number of rows
 2. SMOTE
+   * predefine number of bins and range values of each bin
+   * artifically creates minority classes by interpolating existing instances 
 
 ## Models
 The following models were used for `multi-class classification`
@@ -121,7 +165,22 @@ The following models were used for `multi-class classification`
 * CatBoost
 * Neural Networks
 
+### Hyperparameter Tuning
+| Random Forest | XGBoost | CatBoost |
+| --- | --- | --- |
+| `n_estimators`<br>Number of trees grown by the forest | `n_estimators`<br>Number of trees grown by the forest | `learning_rate`<br>Boosting rate of misclassified data |
+| `max_depth`<br>Depth of each tree | `max_depth`<br>Depth of each tree | `l2_leaf_reg`<br>L2 regularization term, reduces overfitting |
+| | `learning_rate`<br>Boosting rate of misclassified data | `depth`<br>Depth of each tree |
+| | `gamma`, `reg_alpha`, `reg_lambda`<br>Reduce overfitting | |
+
 ### Performance
+<img src="images/xgboost_smote_confusion_boost.png" height=200>
+
+> XGBoost trained with the SMOTE dataset was the highest performing model 
+
+<img src="images/fishers_score.png" height=300>
+
+> Fisher's Score of features
 
 ## Datasets
 * Raw airlines dataset
@@ -168,5 +227,16 @@ The following models were used for `multi-class classification`
 `winddirection_10m_dominant` = Dominant wind direction (°)<br>
 `shortwave_radiation_sum` = The sum of solar radiation on a given day in Megajoules (MJ/m²)
 `et0_fao_evapotranspiration` = Daily sum of ET₀ Reference Evapotranspiration of a well watered grass field (mm)<br> 
+
+* Raw airplane dataset
+
+`aircraft_type` = Type of aircraft
+`aircraft_name` = Name of aircraft
+`age` = Age of aircraft since its year of manufacture
+
+* Raw airport dataset
+
+`Airport` = Airport code
+`TotalOperations` = Total count of flights coming in and out of the airport
 
 <p align="right">(<a href="#top">back to top</a>)</p>
