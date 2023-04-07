@@ -27,16 +27,21 @@
 
 ## About The Project
 
-This project aims to uncover the underlying relationship with extrinsic factors that may exist between flight delays. Flight delay here is defined as the difference between the planned flight time and actual elapsed time. In the project we narrowed to several specific factors, namely:
+This project aims to uncover the underlying relationship between flight departure delays and extrinsic factors. Flight departure delay here is defined when a flight departs later than its scheduled time. In the project I narrowed to several specific factors, namely:
 * `Airline` specific features such as reliability of airline
 * `Airport` specific features such as airport traffic
 * `Airplane` specific features such as airplane age
 * `Weather` specific features such as precipitation, rainfall etc
+* `Holiday` specific features
 
 Refer <a href="#datasets">here</a> for a detailed breakdown of features from datasets and links to the dataset
 
 ### Motivations
-Airline companies took the hardest hit during the pandemic due to travel bans and restrictions. As the pandemic eases into the new normal, reopening borders and relaxed travel restrictions is leading air travel back to pre pandemic levels. Given the sudden recovery and demand in travel, how can we help airlines better mitigate the negative impacts of flight delays so as to serve their customers better.
+Flight departure delays lead to unpleasant travel experiences for passengers while also incurring additional costs to airlines due to the relocation of crews and crafts and creating operational problems for airport management. 
+
+Airline companies took the hardest hit during the pandemic due to travel bans and restrictions. As the pandemic eased into the new normal, reopening borders and relaxed travel restrictions are leading air travel back to pre-pandemic levels. In 2022, global passenger traffic increased significantly, reaching 77% of that in 2019. This trend is expected to continue this year in 2023. 
+
+The problem of flight departure delays is becoming more relevant than ever before, as air travel is not only recovering from the pandemic, but is in fact increasing. An accurate flight departure delay prediction model is needed to solve this problem faced by customers and airlines.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -44,7 +49,7 @@ Airline companies took the hardest hit during the pandemic due to travel bans an
 ## Findings
 1. `Delta Airlines` is the best airline in terms of reliability as it has operates a high number of flights and has a lower than average of departure delay against the industry
 2. `Frontier Airlines` is the worst airline and has the highest delay amongst all the airlines. This could be probably due to the airlines small size, leading to lack of economies of scale, and its operation amongst smaller and inefficient airports
-3. `Monthly Median Departure Delay`, `Origin Precipitation` and `Weather Code Intensity` were the top 3 most useful features in predicting departure delays.
+3. Using Fisher's Score, `Monthly Median Departure Delay`, `Origin Precipitation` and `Weather Code Intensity` were the top 3 most useful features in predicting departure delays.
 
 ## Data Preprocessing
 
@@ -103,62 +108,84 @@ Airline companies took the hardest hit during the pandemic due to travel bans an
 ## EDA
 
 ### Airline rankings in terms of their reliability 
-* Delta Airlines which is one of the biggest or most active airline has one of the lowest mean delay
+* 5 airlines exceed the overall mean departure delay, including Southwest and American Airlines, where both have some of the highest numbers of flights
+* In comparison to Delta Airlines which has the second-highest number of flights, it has a significantly lower mean departure delay of about four minutes below the overall mean departure delay. This is evident that the number of flights operated by an airline does not affect the mean departure delay
+* From the geospatial analysis, we can see that Southwest Airlines has focused on operating on many routes on a low-frequency basis (few yellow lines and many blue lines) as opposed to American Airlines and Delta Airlines which focus on fewer routes but on a much higher frequency (fewer blue lines and more yellow lines). My suspicion is that in trying to cover many routes, Southwest Airlines exposes itself more to smaller airports that might have lower operational efficiency due to a lack of economies of scale. This might be why Southwest Airlines has a much higher mean departure delay than its counterparts.
 
-<img src="images/airline_size.png" height=200>
+<img src="images/airline_size.png">
 
 > Relative count of flights made by each airline
 
-<img src="images/mean_airline_delay.png" height=200>
+<img src="images/mean_airline_delay.png">
 
 > Mean delay of each airline compared with the industry mean
 
-<img src="images/proportion_delay_airline.png" height=200>
+<img src="images/proportion_delay_airline.png">
 
 > Breakdown of type of delays by proportion for the top 5 most active airlines
 
+<img src="images/southwest.png" height=150><img src="images/american.png" height=150>
+<img src="images/delta.png" height=150>
+
+> Geospatial analysis of flight network of Southwest, American and Delta Airline
 
 ### Weather trends and Departure Delay
 * No improvements after performing smoothing using 3 day rolling average
 * Slight improvment when predicting monthly and weekly trends
 
-<img src="images/weather_corr.png" height=200>
+<img src="images/weather_corr.png">
 
 > Before and after smoothing of weather features correlation matrix values
 
-<img src="images/monthly_weather_corr.png" height=200>
+<img src="images/monthly_weather_corr.png">
 
 > Correlation Matrix Heatmap of Monthly Macro Weather Features
 
-<img src="images/weekly_weather_corr.png" height=200>
+<img src="images/weekly_weather_corr.png">
 
 > Correlation Matrix Heatmap of Weekly Macro Weather Features
 
 ### Impact of holidays on Departue Delays
-* Thanksgiving and X'mas has the lowest mean delay
+* Thanksgiving and Christmas has the lowest mean delay
+* Similar patterns were found where there are the highest mean delays and the total number of flights days before and after the actual holiday.
 
-<img src="images/mean_delay_holidays.png" height=200>
+<img src="images/mean_delay_holidays.png">
 
 > Mean delay on each US holiday compared with total flights on that day
+
+<img src="images/thanksgiving.png"><img src="images/xmas.png">
+
+> Total Flight Frequency and Mean Delay of 10 days before and after Thanksgiving and Christmas Day respectively
 
 ### Airport busy-ness and Departure Delays
 * Smaller or less active airports seem to be less efficient as compared to bigger or busier ones
 
-<img src="images/mean_delay_airport.png" height=200>
+<img src="images/mean_delay_airport.png">
 
 > Mean delay for each airport compared with total flights in and out of that airport
 
-### Class Imbalance
-2 approaches were used to tackle the inherent class imbalance that exist within the dataset
-1. Equal Size Binning of Classes
-   * predefine number of bins only
-   * sorts and equally split rows across the specified number of bins such that each bin has an equal number of rows
-2. SMOTE
-   * predefine number of bins and range values of each bin
-   * artifically creates minority classes by interpolating existing instances 
+### Creating a Multi-Class Classification Problem
+I chose Multi-Class Classification over Regression as the approach, as it would help mitigate some of the unexplained variance by having to predict a category, that encapsulates a range of Departure Delay values over the precise Departure Delay value instead.
+
+In performing a Multi-Class Classification approach, I had to first determine how I would categorise the Departure Delay continuous value into categorical classes. To create this categorisation, I formulated 2 ways:
+
+| Custom Partitioning | Equal Count Partitioning |
+| --- | --- |
+| by predefining number of classes and class range | by predefining number of classes only |
+| Categorisation will be according to rule-based criteria, but number of data for each class may differ significantly as the categorisation is user-defined and does not necessarily take into account distribution of data. | Categorisation will be be determined by distribution of data such that each class will have approximately the same amount of data. |
+| <img src="images/custom_partitioning.png"> | <img src="images/equal_count_partitioning.png"> |
+
+One main difference between the 2 methods is that for using Custom Partitioning, by predefining the number of classes and class range based on your own criteria, there is a high chance that there will be problems of class imbalance as the Departure Delays values are not evenly distributed in the first place, as seen by the purple class. However this can be corrected using SMOTE, where minority classes are artificially created by interpolating between existing instances.
+
+### Choosing the Optimal Number of Classes
+We also need to decide what is the optimal number of classes to use. Choosing the optimal number of classes requires a balance as having too few classes would result in a loss of value as classes are not as granular, while having too many classes would result in an increase in complexity as it would become harder to distinguish between classes.
+
+Ultimately, through a process of trial and errors with model validation, I found that the optimal number of classes to have was 5. 
 
 ## Models
-The following models were used for `multi-class classification`
+From the EDA, it’s clear that there is only weak or no linear correlation between the explanatory variables and our target variables. As such, models which are able to capture nonlinear relationships are strongly preferred to linear classification models such as logistic regression
+
+As such, the following models were used for `multi-class classification`
 * Logistic Regression
 * Random Forest Classifier
 * XGBoost
@@ -166,6 +193,7 @@ The following models were used for `multi-class classification`
 * Neural Networks
 
 ### Hyperparameter Tuning
+In general, for XGBoost and CatBoost, focus was placed on the overfitting problem, which occurs more frequently with boosting models
 | Random Forest | XGBoost | CatBoost |
 | --- | --- | --- |
 | `n_estimators`<br>Number of trees grown by the forest | `n_estimators`<br>Number of trees grown by the forest | `learning_rate`<br>Boosting rate of misclassified data |
@@ -174,13 +202,17 @@ The following models were used for `multi-class classification`
 | | `gamma`, `reg_alpha`, `reg_lambda`<br>Reduce overfitting | |
 
 ### Performance
-<img src="images/xgboost_smote_confusion_boost.png" height=200>
+According to the key statistics (that is, early departure class precision and delayed departure class recall), the models trained on equal partitioning tend to perform worse than those trained on custom partitioning with SMOTE, with early precision of ~0.35 and late recall of about 0.2, compared to early combined precision of 0.6 and late combined recall of 0.5.
 
-> XGBoost trained with the SMOTE dataset was the highest performing model 
+In comparison between models trained on the Custom Partitioned Dataset and SMOTE, the XGBoost model seems to perform the best, with combined early precision of 0.6 and combined late recall of 0.55. The ANN model performs the worst, with combined early precision of 0.48 and combined late recall of 0.33. The other two models, Random Forest and CatBoost, perform more similarly to the XGBoost model, but worse.
 
-<img src="images/fishers_score.png" height=300>
+<img src="images/xgboost_smote_confusion_boost.png" height=300>
 
-> Fisher's Score of features
+> XGBoost trained with the Custom Partitioning with SMOTE dataset was the highest performing model using a sample of 100,000 rows
+
+<img src="images/fishers_score.png">
+
+> Using Fisher's Score, `Monthly Median Departure Delay`, `Origin Precipitation`, `Weather Code Intensity` was the Top 3 most impactful features.
 
 ## Datasets
 * Raw airlines dataset
