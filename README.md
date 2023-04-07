@@ -51,6 +51,8 @@ The problem of flight departure delays is becoming more relevant than ever befor
 2. `Frontier Airlines` is the worst airline and has the highest delay amongst all the airlines. This could be probably due to the airlines small size, leading to lack of economies of scale, and its operation amongst smaller and inefficient airports
 3. Using Fisher's Score, `Monthly Median Departure Delay`, `Origin Precipitation` and `Weather Code Intensity` were the top 3 most useful features in predicting departure delays.
 
+<p align="right">(<a href="#top">back to top</a>)</p>
+
 ## Data Preprocessing
 
 ### Recommended Project Directory Setup
@@ -104,6 +106,7 @@ The problem of flight departure delays is becoming more relevant than ever befor
 * Install dependencies `requirements.txt` into python environment
 * Run `python miner.py` to interact with CLI
 
+<p align="right">(<a href="#top">back to top</a>)</p>
 
 ## EDA
 
@@ -129,6 +132,8 @@ The problem of flight departure delays is becoming more relevant than ever befor
 
 > Geospatial analysis of flight network of Southwest, American and Delta Airline
 
+<p align="right">(<a href="#top">back to top</a>)</p>
+
 ### Weather trends and Departure Delay
 * No improvements after performing smoothing using 3 day rolling average
 * Slight improvment when predicting monthly and weekly trends
@@ -145,6 +150,8 @@ The problem of flight departure delays is becoming more relevant than ever befor
 
 > Correlation Matrix Heatmap of Weekly Macro Weather Features
 
+<p align="right">(<a href="#top">back to top</a>)</p>
+
 ### Impact of holidays on Departue Delays
 * Thanksgiving and Christmas has the lowest mean delay
 * Similar patterns were found where there are the highest mean delays and the total number of flights days before and after the actual holiday.
@@ -157,12 +164,16 @@ The problem of flight departure delays is becoming more relevant than ever befor
 
 > Total Flight Frequency and Mean Delay of 10 days before and after Thanksgiving and Christmas Day respectively
 
+<p align="right">(<a href="#top">back to top</a>)</p>
+
 ### Airport busy-ness and Departure Delays
 * Smaller or less active airports seem to be less efficient as compared to bigger or busier ones
 
 <img src="images/mean_delay_airport.png">
 
 > Mean delay for each airport compared with total flights in and out of that airport
+
+<p align="right">(<a href="#top">back to top</a>)</p>
 
 ### Creating a Multi-Class Classification Problem
 I chose Multi-Class Classification over Regression as the approach, as it would help mitigate some of the unexplained variance by having to predict a category, that encapsulates a range of Departure Delay values over the precise Departure Delay value instead.
@@ -172,15 +183,17 @@ In performing a Multi-Class Classification approach, I had to first determine ho
 | Custom Partitioning | Equal Count Partitioning |
 | --- | --- |
 | by predefining number of classes and class range | by predefining number of classes only |
-| Categorisation will be according to rule-based criteria, but number of data for each class may differ significantly as the categorisation is user-defined and does not necessarily take into account distribution of data. | Categorisation will be be determined by distribution of data such that each class will have approximately the same amount of data. |
+| categorisation will be according to rule-based criteria, but number of data for each class may differ significantly as the categorisation is user-defined and does not necessarily take into account distribution of data. | categorisation will be be determined by distribution of data such that each class will have approximately the same amount of data. |
 | <img src="images/custom_partitioning.png"> | <img src="images/equal_count_partitioning.png"> |
 
-One main difference between the 2 methods is that for using Custom Partitioning, by predefining the number of classes and class range based on your own criteria, there is a high chance that there will be problems of class imbalance as the Departure Delays values are not evenly distributed in the first place, as seen by the purple class. However this can be corrected using SMOTE, where minority classes are artificially created by interpolating between existing instances.
+One main difference between the 2 methods is that for using Custom Partitioning, by predefining the number of classes and class range based on your own criteria, there is a high chance that there will be problems of `class imbalance` as the Departure Delays values are not evenly distributed in the first place, as seen by the purple class. However this can be corrected using SMOTE, where minority classes are artificially created by interpolating between existing instances.
 
 ### Choosing the Optimal Number of Classes
 We also need to decide what is the optimal number of classes to use. Choosing the optimal number of classes requires a balance as having too few classes would result in a loss of value as classes are not as granular, while having too many classes would result in an increase in complexity as it would become harder to distinguish between classes.
 
 Ultimately, through a process of trial and errors with model validation, I found that the optimal number of classes to have was 5. 
+
+<p align="right">(<a href="#top">back to top</a>)</p>
 
 ## Models
 From the EDA, it’s clear that there is only weak or no linear correlation between the explanatory variables and our target variables. As such, models which are able to capture nonlinear relationships are strongly preferred to linear classification models such as logistic regression
@@ -213,6 +226,8 @@ In comparison between models trained on the Custom Partitioned Dataset and SMOTE
 <img src="images/fishers_score.png">
 
 > Using Fisher's Score, `Monthly Median Departure Delay`, `Origin Precipitation`, `Weather Code Intensity` was the Top 3 most impactful features.
+
+<p align="right">(<a href="#top">back to top</a>)</p>
 
 ## Datasets
 * Raw airlines dataset
